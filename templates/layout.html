@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8" crossorigin="anonymous"></script>
+
+    <!-- include my own style sheet as per the assignment -->
+    <link href="static/styles.css" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-latest.min.js"></script>
+
+    <title>Spotify Divide: {% block title %}{% endblock %}</title>
+</head>
+<body class="d-flex h-100 text-center text-white bg-dark">
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark align-items-center justify-content-center">
+              <div class = "container-fluid">
+                <a class="navbar-brand" href="\">Spotify Divide</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarCollapse">
+                {% if session.login_success %}
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item"><a class="nav-link" href="#">Step 1: Select playlist source</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Step 2: Select goal playlists</a></li>
+                  <li class="nav-item"><a class="nav-link" href="#">Step 3: Divide!</a></li>
+                </ul>
+                <ul class="navbar-nav ml-auto">
+                  <li class="nav-item"><a class="nav-link" href="#">Log Out Spotify</a></li>
+                </ul>
+                {% else %}
+                <ul class="navbar-nav mr-auto">
+                  <li class="nav-item"><a class="nav-link" href="/login">Log In Spotify</a></li>
+                </ul>
+                {% endif %}
+              </div>
+              </div>
+        </nav>
+
+
+        {% if get_flashed_messages() %}
+            <header>
+                <div class="alert alert-primary text-center" role="alert">
+                    {{ get_flashed_messages() | join(" ") }}
+                </div>
+            </header>
+        {% endif %}
+
+        <main class="px-3">
+            {% block main %}{% endblock %}
+        </main>
+
+        <footer class="footer mt-auto fixed-bottom text-white-50 bg-dark">
+          <div class="container">
+            <span class="text-muted">A web app by <a href="https://www.tice.digital">Tice</a></span>
+          </div>
+        </footer>
+
+    </div>
+</body>
+
+</html>
