@@ -20,3 +20,50 @@ main > .container {
   padding: 60px 15px 0;
 }
 
+body {
+  background-color: #121212;
+}
+
+.navbar {
+  background-color: #000000;
+}
+
+footer {
+  background-color: #000000;
+}
+
+.list-group-item {
+  background-color: #171717;
+}
+
+.list-group:hover .list-group-item:hover {
+  background-color: #282828;
+}
+
+.btn-success {
+  background-color: #1DB954 ;
+  border-color: #1DB954 ;
+}
+
+.btn-success:hover {
+  background-color: #1ED760 ;
+  border-color: #1ED760 ;
+}
+
+.btn-outline-success {
+  border-color: #1DB954 ;
+  color: #1DB954 ;
+}
+
+.btn-outline-success:hover {
+  background-color: #1DB954 ;
+  border-color: #1DB954 ;
+}
+
+a.mylink {
+  color: #66fcf1;
+}
+
+a.mylink:hover {
+  color: #45A29E;
+}
