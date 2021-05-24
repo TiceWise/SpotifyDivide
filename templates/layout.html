@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="h-100">
 
 <head>
     <meta charset="UTF-8">
@@ -33,9 +33,9 @@
     <title>Spotify Divide: {% block title %}{% endblock %}</title>
 </head>
 
-<body class="d-flex flex-column h-100">
+<body class="d-flex flex-column h-100 text-light">
     <header>
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top">
             <div class="container-fluid">
                 <a class="navbar-brand" href="\">Spotify Divide</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
@@ -45,16 +45,17 @@
                 <div class="collapse navbar-collapse" id="navbarCollapse">
                     {% if session.spotify_logged_in %}
                     <ul class="navbar-nav me-auto mb-2 mb-md-0">
-                        <li class="nav-item"><a class="nav-link" href="/select_source">1: Select playlist source</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/select_source">1: Select playlist source</a>
+                        </li>
                         <li class="nav-item"><a class="nav-link" href="#">2: Select target playlists</a></li>
                         <li class="nav-item"><a class="nav-link" href="#">3: Divide!</a></li>
                     </ul>
                     <form class="d-flex">
-                        <a class="btn btn-outline-success" href="/logout">Log Out Spotify</a>
+                        <a class="btn btn-outline-success" href="/logout">Log out Spotify</a>
                     </form>
                     {% else %}
                     <form class="d-flex">
-                        <a class="btn btn-outline-success" href="/login">Log In Spotify</a>
+                        <a class="btn btn-outline-success" href="/login">Log in Spotify</a>
                     </form>
                     {% endif %}
                 </div>
@@ -71,14 +72,15 @@
                 </div>
             </header>
             {% endif %}
-
-            {% block main %}{% endblock %}
+            <div class="my-5 mx-auto">
+                {% block main %}{% endblock %}
+            </div>
         </div>
     </main>
 
-    <footer class="footer mt-auto py-3 text-white-50 bg-dark">
+    <footer class="footer mt-auto py-3 text-white-50">
         <div class="container">
-            <span class="text-muted">A web app by <a href="https://www.tice.digital">Tice</a></span>
+            <span class="text-muted">A web app by <a class="mylink" href="https://www.tice.digital">Tice</a></span>
         </div>
     </footer>
 

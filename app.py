@@ -157,10 +157,10 @@ def select_source():
     # get the spotify thingy
     spotify = get_spotify()
 
-    # if the user clicked on a playlist, go to next step (TODO)
+    # if the user clicked on a playlist, go to next step
     if request.method == "POST":
-        print(request.form["playlist_id"])
-        return request.form["playlist_id"]
+        session["source_playlist"] = request.form["playlist_id"]
+        return render_template("select_targets.html")
     # the user landed on the page... so get playlists from spotify
     else:
         pl = spotify.current_user_playlists()
@@ -173,6 +173,45 @@ def select_source():
 
         # return template with the playlists
         return render_template("select_source.html", playlists=playlists)
+
+
+@app.route("/select_target", methods=["GET", "POST"])
+@login_required
+def select_target():
+    """
+    Select the 'target' playlists to which we add the songs.
+    We do so by getting all the users playlists from Spotify and
+    letting the user select multiple.
+    We only display the playlists that the user can edit (must be
+    owned by the user and not collaborative))
+    """
+    # get the spotify thingy
+    spotify = get_spotify()
+
+    # if the user clicked on a confirm, go to next step
+    if request.method == "POST":
+        # session["source_playlist"] = request.form["playlist_id"]
+        print(request.form["playlist_id"])
+        return "TODO"
+    # the user landed on the page... so get playlists from spotify
+    else:
+        pl = spotify.current_user_playlists()
+        playlists = pl["items"]
+
+        # loop till we get all playlists...
+        while pl["next"]:
+            pl = spotify.next(pl)
+            playlists.extend(pl["items"])
+
+        # We only display the playlists that the user can edit (must be
+        # owned by the user and not collaborative)
+        # (https://stackoverflow.com/questions/38885575/
+        # spotify-web-api-how-to-find-playlists-the-user-can-edit)
+        for playlist in playlists:
+            print(playlist)
+
+        # return template with the playlists
+        return render_template("select_target.html", playlists=playlists)
 
 
 if __name__ == "__main__":
