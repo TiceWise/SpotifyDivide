@@ -65,6 +65,12 @@ def index():
     # Step 4. Signed in, display data
     session['login_success'] = True
     spotify = spotipy.Spotify(auth_manager=auth_manager)
+
+    user = spotify.me()
+    username = user['display_name']
+
+    flash(f"Logged in to Spotify as {username}")
+
     return redirect('/select_source')
 
 
@@ -78,8 +84,6 @@ def select_source():
         return request.form['playlist_id']
 
     else:
-        user = spotify.me()
-        username = user['display_name']
 
         pl = spotify.current_user_playlists()
         # loop till we get all playlists...
@@ -92,7 +96,7 @@ def select_source():
         # for playlist in playlists:
         #     print(playlist['name'])
 
-        return render_template("select_source.html", username=username, playlists=playlists)
+        return render_template("select_source.html", playlists=playlists)
 
 
 
