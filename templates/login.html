@@ -1,23 +1,25 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Log in
+Log in
 {% endblock %}
 
 {% block main %}
-    <div class="px-4 pt-5 my-5 text-center">
-        <H1 class="display-4 fw-bold">Welcome to Spotify Divide!</H1>
-        <div class="py-2 my-2 mx-auto">
-            <H2>Divide your liked songs or songs from a playlist over other playlists in three steps.</H2>
-        </div>
-        <div class="col-lg-6 mx-auto">
-            <H3 class = "lead text-left">1: Select the source playlist (or liked songs) which contains the tracks you want to divide.</H3>
-            <H3 class = "lead text-left">2: Select all possible target playlists you want to move the tracks to.</H3>
-            <H3 class = "lead text-left">3: Divide! Per song, determine to which of the selected playlists you want to move your tracks to.</H3>
-        </div>
-        <div class = "py-3 my-3 mx-auto">
-            <H4 >Log in to your Spotify account to begin:</H4>
-            <a href={{ auth_url }} class="btn btn-primary btn-success my-2">Spotify Sign In</a>
-        </div>
+<div class="px-4 pt-5 my-5 text-center">
+    <H1 class="display-4 fw-bold">Welcome to Spotify Divide!</H1>
+    <div class="py-2 my-2 mx-auto">
+        <H2>Divide your liked songs or songs from a playlist over other playlists in three steps.</H2>
     </div>
+    <div class="col-lg-6 mx-auto">
+        <H3 class="lead text-left">1: Select the source playlist (or liked songs) which contains the tracks you want to
+            divide.</H3>
+        <H3 class="lead text-left">2: Select all possible target playlists you want to move the tracks to.</H3>
+        <H3 class="lead text-left">3: Divide! Per song, determine to which of the selected playlists you want to move
+            your tracks to.</H3>
+    </div>
+    <div class="py-3 my-3 mx-auto">
+        <H4>Log in to your Spotify account to begin:</H4>
+        <a href={{ auth_url }} class="btn btn-primary btn-success my-2">Spotify Sign In</a>
+    </div>
+</div>
 {% endblock %}
