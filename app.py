@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request, session, flash
 import spotipy
 import os
 import uuid
+from functools import wraps
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
@@ -9,23 +10,34 @@ app.secret_key = app.config["SECRET_SESSION_KEY"]
 
 # help from:
 # https://stackoverflow.com/questions/57580411/storing-spotify-token-in-flask-session-using-spotipy
-# https://medium.com/analytics-vidhya/discoverdaily-a-flask-web-application-built-with-the-spotify-api-and-deployed-on-google-cloud-6c046e6e731b
 # https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3
-# https://github.com/plamere/spotipy/blob/master/examples/app.py
 
+# create a cache folder in general
 caches_folder = "./.spotify_caches/"
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
 
 
 def session_cache_path():
+    """
+    Create a cache for the current user.
+    """
+
     return caches_folder + session.get("uuid")
 
 
-def check_log_in():
+def get_spotify():
+    """
+    Returns the spotipy.Spotify for the current logged in user.
+    User must be logged in to Spotify previously.
+    """
+
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=session_cache_path()
     )
+
+    # Don't reuse a SpotifyOAuth object because they store token info and you
+    # could leak user tokens if you reuse a SpotifyOAuth object
     auth_manager = spotipy.oauth2.SpotifyOAuth(
         client_id=app.config["CLIENT_ID"],
         client_secret=app.config["CLIENT_SECRET"],
@@ -41,12 +53,42 @@ def check_log_in():
     return spotipy.Spotify(auth_manager=auth_manager)
 
 
-# authorization-code-flow Step 1. Have your application request authorization;
-# the user logs in and authorizes access
+def login_required(f):
+    """
+    Decorate routes to require login.
+    https://flask.palletsprojects.com/en/1.1.x/patterns/viewdecorators/
+    """
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("uuid") or not session.get("spotify_logged_in"):
+            return redirect("/login")
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 @app.route("/")
 def index():
+    """
+    The basic route. Checks if user is logged in. If not, redirect to log in.
+    If so, redirect to select source page.
+    """
+
+    if not session.get("uuid") or not session.get("spotify_logged_in"):
+        return redirect("/login")
+
+    return redirect("/select_source")
+
+
+@app.route("/login")
+def login():
+    """
+    Log user in to Spotify; create a token which we reuse using the
+    cache_handler.
+    https://github.com/plamere/spotipy/blob/master/examples/app.py
+    """
+
     if not session.get("uuid"):
         # Step 1. Visitor is unknown, give random ID
         session["uuid"] = str(uuid.uuid4())
@@ -78,37 +120,58 @@ def index():
         return render_template("login.html", auth_url=auth_url)
 
     # Step 4. Signed in, display data
-    session["login_success"] = True
     spotify = spotipy.Spotify(auth_manager=auth_manager)
 
     user = spotify.me()
     username = user["display_name"]
 
+    session["spotify_logged_in"] = True
+
     flash(f"Logged in to Spotify as {username}")
 
-    return redirect("/select_source")
+    return redirect("/")
+
+
+@app.route("/logout")
+def logout():
+    """
+    Log the user out by deleting the cache file and clearing the session.
+    """
+    try:
+        # Remove the CACHE file (.cache-test) so that a new user can authorize.
+        os.remove(session_cache_path())
+        session.clear()
+    except OSError as e:
+        print("Error: %s - %s." % (e.filename, e.strerror))
+    return redirect("/")
 
 
 @app.route("/select_source", methods=["GET", "POST"])
+@login_required
 def select_source():
-    # check if we are correctly logged in
-    spotify = check_log_in()
+    """
+    Select the 'source' playlist from which we divide the songs.
+    We do so by getting all the users playlists from Spotify and
+    letting the user click one.
+    """
+    # get the spotify thingy
+    spotify = get_spotify()
 
+    # if the user clicked on a playlist, go to next step (TODO)
     if request.method == "POST":
         print(request.form["playlist_id"])
         return request.form["playlist_id"]
+    # the user landed on the page... so get playlists from spotify
     else:
         pl = spotify.current_user_playlists()
-        # loop till we get all playlists...
         playlists = pl["items"]
 
+        # loop till we get all playlists...
         while pl["next"]:
             pl = spotify.next(pl)
             playlists.extend(pl["items"])
 
-        # for playlist in playlists:
-        #     print(playlist['name'])
-
+        # return template with the playlists
         return render_template("select_source.html", playlists=playlists)
 
 
