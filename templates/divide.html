@@ -7,13 +7,12 @@ Step 3: Divide!
 {% block main %}
 <div class="container col-xxl-10 mx-auto">
     <H3 class="mt-4 mb-3">3: Select the playlists you want to move this track to and confirm:</H3>
-    <div class="row d-flex align-items-center py-2">
-        <div class="col-10 col-sm-8 col-lg-6">
-            <img src={{ track['album']['images'][0]['url'] }} class="d-block mx-lg-auto img-fluid" alt="Album cover" loading="lazy"
-                width="300" height="300">
+    <div class="row flex-xl-row justify-content-center align-items-center py-2">
+        <div class="col-8 col-sm-6 col-lg-4">
+            <img src={{ track['album']['images'][0]['url'] }} class="d-block mx-auto img-fluid" alt="Album cover" loading="lazy"
+                width="250" height="250">
         </div>
-    </div>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
         <div class="lead">
             Title:
         </div>
@@ -24,7 +23,8 @@ Step 3: Divide!
             Album:
         </div>
     </div>
-    <form action="/select_target" method="post">
+    </div>
+    <form action="/divide" method="post">
 
         <button type="submit" class="btn btn-success my-2 d-flex mx-auto">Confirm</button>
         <div class="form-check mx-3 my-2">
