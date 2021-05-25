@@ -5,12 +5,14 @@
 
 
 /* Custom default button */
+/*
 .btn-secondary,
 .btn-secondary:hover,
 .btn-secondary:focus {
   color: #333;
-  text-shadow: none; /* Prevent inheritance from `body` */
+  text-shadow: none; 
 }
+*/
 
 /* Custom page CSS
 -------------------------------------------------- */
@@ -33,11 +35,11 @@ footer {
 }
 
 .list-group-item {
-  background-color: #171717;
+  background-color: #282828;
 }
 
 .list-group:hover .list-group-item:hover {
-  background-color: #282828;
+  background-color: #404040;
 }
 
 .btn-success {
@@ -67,3 +69,9 @@ a.mylink {
 a.mylink:hover {
   color: #45A29E;
 }
+
+.form-check-input:checked{
+  background-color: #1ED760;
+  border-color: #1ED760;
+}
+

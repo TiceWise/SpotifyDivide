@@ -139,6 +139,8 @@ def logout():
     Log the user out by deleting the cache file and clearing the session.
     """
     try:
+        # TODO: make this a bit smarter such that we can store the source-
+        # and target playlists
         # Remove the CACHE file (.cache-test) so that a new user can authorize.
         os.remove(session_cache_path())
         session.clear()
@@ -160,7 +162,8 @@ def select_source():
 
     # if the user clicked on a playlist, go to next step
     if request.method == "POST":
-        session["source_playlist"] = request.form.get("pl_btn")
+        session["source_playlist"] = request.form.get("playlist_btn")
+        print(session.get("source_playlist"))
         return redirect(url_for("select_target"))
     # the user landed on the page... so get playlists from spotify
     else:
@@ -191,9 +194,14 @@ def select_target():
 
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
-        # session["source_playlist"] = request.form["playlist_id"]
-        session["source_playlist"] = request.form.get("pl_btn")
-        return "TODO"
+        session["target_playlists"] = request.form.getlist("target_playlists")
+
+        if not session.get("target_playlists"):
+            flash("No target playlist selected, "
+                  "please select a target playlist and confirm.")
+            return redirect(url_for('select_target'))
+        else:
+            return "TODO"
     # the user landed on the page... so get playlists from spotify
     else:
         pl = spotify.current_user_playlists()
@@ -204,6 +212,9 @@ def select_target():
             pl = spotify.next(pl)
             playlists.extend(pl["items"])
 
+        # if we've made a selection before, let's pre-check those items
+        target_playlists = session.get("target_playlists")
+
         # We only display the playlists that the user can edit: must be owned
         # by the user and not collaborative
         # (https://stackoverflow.com/questions/38885575/
@@ -211,8 +222,16 @@ def select_target():
 
         user = spotify.me()
         for playlist in reversed(playlists):
+            # remove not-owned and collaborative playlists
             if playlist["owner"]["id"] != user["id"] or playlist["collaborative"]:
                 playlists.remove(playlist)
+            else:
+                # if we've made a selection before, let's pre-check those items
+                if target_playlists:
+                    if playlist['id'] in target_playlists:
+                        playlist['checked'] = True
+                    else:
+                        playlist['checked'] = False
 
         # return template with the playlists
 
