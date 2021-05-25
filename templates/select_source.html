@@ -7,15 +7,17 @@ Step 1: Select Source
 {% block main %}
 <div class="col-lg-8 mx-auto">
     <H3 class="my-4">Step 1: Select the source playlist which contains the tracks you want to divide:</H3>
-    <div class="list-group bg-dark">
-        <button type="button" id="liked_songs"
+
+    <!--https://stackoverflow.com/questions/50162274/getting-button-name-as-input-->
+    <form class="list-group bg-dark" action="/select_source" method="post">
+        <button type="submit" name="pl_btn" value="liked_songs"
             class="list-group-item list-group-item-action d-flex align-items-center text-light">
             <div class="image-parent"><img src="static/SpotifyLiked.png" class="img-fluid"></div>
             <div class="ms-3"> Liked songs </div>
         </button>
         {% for playlist in playlists %}
         <!-- https://codepen.io/cristinaconacel/pen/OBOjLg -->
-        <button type="button" id={{ playlist['id'] }}
+        <button type="submit" name="pl_btn" value={{ playlist['id'] }}
             class="list-group-item list-group-item-action d-flex align-items-center text-light">
             {% if playlist['images'] %}
             <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
@@ -26,14 +28,7 @@ Step 1: Select Source
             <div class="ms-3"> {{ playlist['name'] }} </div>
         </button>
         {% endfor %}
-        <script>
-            // https://stackoverflow.com/questions/32441186/jquery-post-to-flask-how-to-request-data
-            // https://stackoverflow.com/questions/10291017/how-to-get-id-of-button-user-just-clicked
+    </form>
 
-            $("button").click(function () {
-                $.post("/select_source", { "playlist_id": this.id })
-            });
-        </script>
-    </div>
 </div>
 {% endblock %}

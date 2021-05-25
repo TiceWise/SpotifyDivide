@@ -1,4 +1,5 @@
 from flask import Flask, render_template, redirect, request, session, flash
+from flask import url_for
 import spotipy
 import os
 import uuid
@@ -62,7 +63,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("uuid") or not session.get("spotify_logged_in"):
-            return redirect("/login")
+            return redirect(url_for("login"))
         return f(*args, **kwargs)
 
     return decorated_function
@@ -76,9 +77,9 @@ def index():
     """
 
     if not session.get("uuid") or not session.get("spotify_logged_in"):
-        return redirect("/login")
+        return redirect(url_for("login"))
 
-    return redirect("/select_source")
+    return redirect(url_for("select_source"))
 
 
 @app.route("/login")
@@ -159,8 +160,8 @@ def select_source():
 
     # if the user clicked on a playlist, go to next step
     if request.method == "POST":
-        session["source_playlist"] = request.form["playlist_id"]
-        return render_template("select_targets.html")
+        session["source_playlist"] = request.form.get("pl_btn")
+        return redirect(url_for("select_target"))
     # the user landed on the page... so get playlists from spotify
     else:
         pl = spotify.current_user_playlists()
@@ -191,7 +192,7 @@ def select_target():
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
         # session["source_playlist"] = request.form["playlist_id"]
-        print(request.form["playlist_id"])
+        session["source_playlist"] = request.form.get("pl_btn")
         return "TODO"
     # the user landed on the page... so get playlists from spotify
     else:
@@ -203,14 +204,18 @@ def select_target():
             pl = spotify.next(pl)
             playlists.extend(pl["items"])
 
-        # We only display the playlists that the user can edit (must be
-        # owned by the user and not collaborative)
+        # We only display the playlists that the user can edit: must be owned
+        # by the user and not collaborative
         # (https://stackoverflow.com/questions/38885575/
         # spotify-web-api-how-to-find-playlists-the-user-can-edit)
-        for playlist in playlists:
-            print(playlist)
+
+        user = spotify.me()
+        for playlist in reversed(playlists):
+            if playlist["owner"]["id"] != user["id"] or playlist["collaborative"]:
+                playlists.remove(playlist)
 
         # return template with the playlists
+
         return render_template("select_target.html", playlists=playlists)
 
 
