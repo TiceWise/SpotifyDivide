@@ -4,6 +4,9 @@ import spotipy
 import os
 import uuid
 from functools import wraps
+from datetime import timedelta
+
+# import time
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
@@ -52,6 +55,12 @@ def get_spotify():
         return redirect("/")
 
     return spotipy.Spotify(auth_manager=auth_manager)
+
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=30)
 
 
 def login_required(f):
@@ -157,6 +166,8 @@ def select_source():
     We do so by getting all the users playlists from Spotify and
     letting the user click one.
     """
+    # tic = time.perf_counter()
+
     # get the spotify thingy
     spotify = get_spotify()
 
@@ -175,6 +186,9 @@ def select_source():
             pl = spotify.next(pl)
             playlists.extend(pl["items"])
 
+        # toc = time.perf_counter()
+        # print(f"Select source total code time: {toc - tic:0.4f} seconds")
+
         # return template with the playlists
         return render_template("select_source.html", playlists=playlists)
 
@@ -189,14 +203,16 @@ def select_target():
     We only display the playlists that the user can edit (must be
     owned by the user and not collaborative))
     """
+    # tic = time.perf_counter()
+
     # get the spotify thingy
     spotify = get_spotify()
 
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
-        session["target_playlists"] = request.form.getlist("target_playlists")
+        session["target_playlist_ids"] = request.form.getlist("target_playlist_ids")
 
-        if not session.get("target_playlists"):
+        if not session.get("target_playlist_ids"):
             flash(
                 "No target playlist selected, "
                 "please select target playlists and confirm."
@@ -215,7 +231,7 @@ def select_target():
             playlists.extend(pl["items"])
 
         # if we've made a selection before, let's pre-check those items
-        target_playlists = session.get("target_playlists")
+        target_playlist_ids = session.get("target_playlist_ids")
 
         # We only display the playlists that the user can edit: must be owned
         # by the user and not collaborative
@@ -229,13 +245,15 @@ def select_target():
                 playlists.remove(playlist)
             else:
                 # if we've made a selection before, let's pre-check those items
-                if target_playlists:
-                    if playlist["id"] in target_playlists:
+                if target_playlist_ids:
+                    if playlist["id"] in target_playlist_ids:
                         playlist["checked"] = True
                     else:
                         playlist["checked"] = False
 
         # return template with the playlists
+        # toc = time.perf_counter()
+        # print(f"Select target total code time: {toc - tic:0.4f} seconds")
 
         return render_template("select_target.html", playlists=playlists)
 
@@ -246,6 +264,7 @@ def divide():
     """
     TODO...
     """
+
     # get the spotify thingy
     spotify = get_spotify()
 
@@ -254,14 +273,6 @@ def divide():
         return "TODO"
     # the user landed on the page... so get playlists from spotify
     else:
-        pl = spotify.current_user_playlists()
-        playlists = pl["items"]
-
-        # loop till we get all playlists...
-        while pl["next"]:
-            pl = spotify.next(pl)
-            playlists.extend(pl["items"])
-
         # check the source playlist
         source_playlist = session.get("source_playlist")
         if not source_playlist:
@@ -283,10 +294,10 @@ def divide():
             tr = spotify.next(tr)
             tracks.extend(tr["items"])
 
-        print(len(tracks))
+        # print(len(tracks))
 
         # check the target playlists
-        if not session.get("target_playlists"):
+        if not session.get("target_playlist_ids"):
             flash(
                 "No target playlist selected, "
                 "please select target playlists in step 2."
@@ -295,11 +306,11 @@ def divide():
 
         # TODO... check if we own the target playlists?...
 
-        target_playlists = session.get("target_playlists")
+        target_playlist_ids = session.get("target_playlist_ids")
 
         playlists = []
-        for target_playlist in target_playlists:
-            playlists.append(spotify.playlist(target_playlist))
+        for target_playlist_id in target_playlist_ids:
+            playlists.append(spotify.playlist(target_playlist_id))
 
         # We only display the playlists that the user can edit: must be owned
         # by the user and not collaborative
@@ -317,7 +328,25 @@ def divide():
         # tracks - the list of track ids to add to the playlist
 
         # return template with the playlists
-        track = tracks[0]['track']
+
+        """
+        TODO: STORE DATA IN SESSION:
+        - playlists (just the name and id's? Store that info earlier with
+          the target selection where we still have it?)
+        - tracklist
+        - iteration number [initialize in GET to 0]
+
+        Then...
+        - load from session in the post stream
+
+        Also...
+        - use the same way to 'render?', or is it rel. short code already?..
+        - we need next, previous, Move and next, and move and prev - buttons
+        - these button change to copy if 'delete from playlist' isn't selected?
+        """
+
+        track = tracks[0]["track"]
+
         return render_template("divide.html", playlists=playlists, track=track)
 
 
