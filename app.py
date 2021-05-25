@@ -197,11 +197,13 @@ def select_target():
         session["target_playlists"] = request.form.getlist("target_playlists")
 
         if not session.get("target_playlists"):
-            flash("No target playlist selected, "
-                  "please select a target playlist and confirm.")
-            return redirect(url_for('select_target'))
+            flash(
+                "No target playlist selected, "
+                "please select target playlists and confirm."
+            )
+            return redirect(url_for("select_target"))
         else:
-            return "TODO"
+            return redirect(url_for("divide"))
     # the user landed on the page... so get playlists from spotify
     else:
         pl = spotify.current_user_playlists()
@@ -228,14 +230,95 @@ def select_target():
             else:
                 # if we've made a selection before, let's pre-check those items
                 if target_playlists:
-                    if playlist['id'] in target_playlists:
-                        playlist['checked'] = True
+                    if playlist["id"] in target_playlists:
+                        playlist["checked"] = True
                     else:
-                        playlist['checked'] = False
+                        playlist["checked"] = False
 
         # return template with the playlists
 
         return render_template("select_target.html", playlists=playlists)
+
+
+@app.route("/divide", methods=["GET", "POST"])
+@login_required
+def divide():
+    """
+    TODO...
+    """
+    # get the spotify thingy
+    spotify = get_spotify()
+
+    # if the user clicked on a confirm, go to next step
+    if request.method == "POST":
+        return "TODO"
+    # the user landed on the page... so get playlists from spotify
+    else:
+        pl = spotify.current_user_playlists()
+        playlists = pl["items"]
+
+        # loop till we get all playlists...
+        while pl["next"]:
+            pl = spotify.next(pl)
+            playlists.extend(pl["items"])
+
+        # check the source playlist
+        source_playlist = session.get("source_playlist")
+        if not source_playlist:
+            flash("No source playlist selected, select a source playlist in step 1.")
+            return redirect(url_for("select_target"))
+
+        if source_playlist == "liked_songs":
+            tr = spotify.current_user_saved_tracks()
+        else:
+            tr = spotify.playlist_tracks(playlist_id=source_playlist)
+            # TODO: possibly 'playlist_items', we can also move podcasts
+
+        if len(tr["items"]) == 0:
+            flash("Playlist is empty, select an other source playlist.")
+            return redirect(url_for("select_target"))
+
+        tracks = tr["items"]
+        while tr["next"]:
+            tr = spotify.next(tr)
+            tracks.extend(tr["items"])
+
+        print(len(tracks))
+
+        # check the target playlists
+        if not session.get("target_playlists"):
+            flash(
+                "No target playlist selected, "
+                "please select target playlists in step 2."
+            )
+            return redirect(url_for("select_target"))
+
+        # TODO... check if we own the target playlists?...
+
+        target_playlists = session.get("target_playlists")
+
+        playlists = []
+        for target_playlist in target_playlists:
+            playlists.append(spotify.playlist(target_playlist))
+
+        # We only display the playlists that the user can edit: must be owned
+        # by the user and not collaborative
+        # (https://stackoverflow.com/questions/38885575/
+        # spotify-web-api-how-to-find-playlists-the-user-can-edit)
+
+        # audio_features(tracks=[])
+        # current_user_saved_tracks_delete(track_id)
+        # user_playlist_add_tracks(user, playlist_id, tracks)
+        # Replace all tracks in a playlist
+
+        # Parameters:
+        # user - the id of the user
+        # playlist_id - the id of the playlist
+        # tracks - the list of track ids to add to the playlist
+
+        # return template with the playlists
+        track = tracks[0]['track']
+        return render_template("divide.html", playlists=playlists, track=track)
 
 
 if __name__ == "__main__":

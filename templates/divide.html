@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Step 3: Divide!
+{% endblock %}
+
+{% block main %}
+<div class="container col-xxl-10 mx-auto">
+    <H3 class="mt-4 mb-3">3: Select the playlists you want to move this track to and confirm:</H3>
+    <div class="row d-flex align-items-center py-2">
+        <div class="col-10 col-sm-8 col-lg-6">
+            <img src={{ track['album']['images'][0]['url'] }} class="d-block mx-lg-auto img-fluid" alt="Album cover" loading="lazy"
+                width="300" height="300">
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="lead">
+            Title:
+        </div>
+        <div class="lead">
+            Artist:
+        </div>
+        <div class="lead">
+            Album:
+        </div>
+    </div>
+    <form action="/select_target" method="post">
+
+        <button type="submit" class="btn btn-success my-2 d-flex mx-auto">Confirm</button>
+        <div class="form-check mx-3 my-2">
+            <!--https://stackoverflow.com/questions/386281/how-to-implement-select-all-check-box-in-html-->
+            <script language="JavaScript">
+                function toggle(source) {
+                    checkboxes = document.getElementsByName('target_playlists');
+                    for (var i = 0, n = checkboxes.length; i < n; i++) {
+                        checkboxes[i].checked = source.checked;
+                    }
+                }
+            </script>
+            <input type="checkbox" class="form-check-input" onClick="toggle(this)" id="select_all">
+            <label class="form-check-label ms-2" for="select_all">
+                Select all
+            </label>
+        </div>
+        <div class="list-group bg-dark">
+            <!-- maybe later I'll implement this funcionality; just 'like' the song selected...
+            <button type="submit" name="pl_btn" value="liked_songs"
+                class="list-group-item list-group-item-action d-flex align-items-center text-light">
+                <div class="image-parent"><img src="static/SpotifyLiked.png" class="img-fluid"></div>
+                <div class="ms-3"> Liked songs </div>
+            </button>
+            -->
+            {% for playlist in playlists %}
+            <!-- https://codepen.io/cristinaconacel/pen/OBOjLg -->
+            <label class="list-group-item list-group-item-action d-flex align-items-center text-light">
+                {% if playlist['checked'] %}
+                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                    value="{{ playlist['id'] }}" checked>
+                {% else %}
+                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                    value="{{ playlist['id'] }}">
+                {% endif %}
+                {% if playlist['images'] %}
+                <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
+                {% else %}
+                <div class="image-parent"><img src="static/EmptyPlaylist.png" class="img-fluid"></div>
+                {% endif %}
+
+                <div class="ms-3"> {{ playlist['name'] }} </div>
+            </label>
+            {% endfor %}
+        </div>
+    </form>
+
+</div>
+{% endblock %}
