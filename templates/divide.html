@@ -5,72 +5,128 @@ Step 3: Divide!
 {% endblock %}
 
 {% block main %}
-<div class="container col-xxl-10 mx-auto">
+<div class="container col-lg-9 mx-auto">
     <H3 class="mt-4 mb-3">3: Select the playlists you want to move this track to and confirm:</H3>
     <div class="row flex-xl-row justify-content-center align-items-center py-2">
-        <div class="col-8 col-sm-6 col-lg-4">
-            <img src={{ track['album']['images'][0]['url'] }} class="d-block mx-auto img-fluid" alt="Album cover" loading="lazy"
-                width="250" height="250">
-        </div>
-    <div class="col-lg-8">
-        <div class="lead">
-            Title:
-        </div>
-        <div class="lead">
-            Artist:
-        </div>
-        <div class="lead">
-            Album:
-        </div>
-    </div>
-    </div>
-    <form action="/divide" method="post">
+        <div class="container col-9 col-sm-9 col-md-4 col-lg-5 flex-row justify-content-center">
+            <img src={{ image_url }} class="d-block mx-auto img-fluid" alt="Album cover" loading="lazy" width="300"
+                height="300">
 
-        <button type="submit" class="btn btn-success my-2 d-flex mx-auto">Confirm</button>
-        <div class="form-check mx-3 my-2">
-            <!--https://stackoverflow.com/questions/386281/how-to-implement-select-all-check-box-in-html-->
-            <script language="JavaScript">
-                function toggle(source) {
-                    checkboxes = document.getElementsByName('target_playlists');
-                    for (var i = 0, n = checkboxes.length; i < n; i++) {
-                        checkboxes[i].checked = source.checked;
-                    }
-                }
+            {% if preview_url %}
+
+            <div id="audio-block" class="py-2">
+                <audio id="audio_preview" preload="auto" controls="controls" autoplay type="audio/mpeg">
+                    <source src="{{ preview_url }}" type="audio/mp3" />
+                </audio>
+            </div>
+            <script>
+                var audio = document.getElementById("audio_preview");
+                audio.volume = 0.3;
+                // audio.style.width = '200px';
             </script>
-            <input type="checkbox" class="form-check-input" onClick="toggle(this)" id="select_all">
-            <label class="form-check-label ms-2" for="select_all">
-                Select all
-            </label>
+            <!--
+            <iframe src={{ uri }} width="250" height="80" allowtransparency="true"></iframe>
+        -->
+            {% endif %}
         </div>
-        <div class="list-group bg-dark">
-            <!-- maybe later I'll implement this funcionality; just 'like' the song selected...
+        <div class="col-md-8 col-lg-7">
+            <p class="mb-0">
+                {{ track_type | upper() }}
+            </p>
+            <h1 class="display-4 fw-bold mt-2">
+                {{ title }}
+            </h1>
+            <p class="h5 fw-bold">
+                {{ artist_str }}
+            </p>
+            <p class="h6 fw-light">
+                {{ album_type | upper() }}: {{ album }} &bull; released on {{ label }} on <span class="nowrap"> {{
+                    release_date }} </span>
+            </p>
+            <p class="h6 fw-light">
+                {{ duration_str }} &bull; Artist Genres: {{ genres_str }}
+                <!-- &bull; -->
+            </p>
+            <p class="h6 fw-light"></p>
+            <span class="nowrap">BPM: {{bpm}}</span> &bull;
+            <span class="nowrap">Key: {{ key_tone }}
+                ({{key_cam}})</span>
+            </p>
+            <div class="fw-lighter mt-3 bar-box">
+                <table class="table table-borderless text-light fw-lighter table-sm">
+                    <tbody>
+                        {% for feature in feature_list %}
+                        <tr>
+                            <td class="left-cell"><span class="nowrap"><span>{{ feature['name'] }}: {{ feature['value']
+                                        }}</span></td>
+                            <td class="right-cell">
+                                <div class="progress" style="height: 5px">
+                                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow={{
+                                        feature['value'] }} aria-valuemin="0" aria-valuemax="100"
+                                        style="width: {{ feature['value'] }}%; background-color:{{ feature['color'] }} !important;">
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!--
+            
+        -->
+            </div>
+        </div>
+        <div class="py-2">
+
+        </div>
+        <form action="/divide" method="post">
+
+            <button type="submit" class="btn btn-success my-2 d-flex mx-auto">Confirm</button>
+            <div class="form-check mx-3 my-2">
+                <!--https://stackoverflow.com/questions/386281/how-to-implement-select-all-check-box-in-html-->
+                <script language="JavaScript">
+                    function toggle(source) {
+                        checkboxes = document.getElementsByName('target_playlists');
+                        for (var i = 0, n = checkboxes.length; i < n; i++) {
+                            checkboxes[i].checked = source.checked;
+                        }
+                    }
+                </script>
+                <input type="checkbox" class="form-check-input" onClick="toggle(this)" id="select_all">
+                <label class="form-check-label ms-2" for="select_all">
+                    Select all
+                </label>
+            </div>
+            <div class="list-group bg-dark">
+                <!-- maybe later I'll implement this funcionality; just 'like' the song selected...
             <button type="submit" name="pl_btn" value="liked_songs"
                 class="list-group-item list-group-item-action d-flex align-items-center text-light">
                 <div class="image-parent"><img src="static/SpotifyLiked.png" class="img-fluid"></div>
                 <div class="ms-3"> Liked songs </div>
             </button>
             -->
-            {% for playlist in playlists %}
-            <!-- https://codepen.io/cristinaconacel/pen/OBOjLg -->
-            <label class="list-group-item list-group-item-action d-flex align-items-center text-light">
-                {% if playlist['checked'] %}
-                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
-                    value="{{ playlist['id'] }}" checked>
-                {% else %}
-                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
-                    value="{{ playlist['id'] }}">
-                {% endif %}
-                {% if playlist['images'] %}
-                <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
-                {% else %}
-                <div class="image-parent"><img src="static/EmptyPlaylist.png" class="img-fluid"></div>
-                {% endif %}
+                {% for playlist in playlists %}
+                <!-- https://codepen.io/cristinaconacel/pen/OBOjLg -->
+                <label class="list-group-item list-group-item-action d-flex align-items-center text-light">
+                    {% if playlist['checked'] %}
+                    <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                        value="{{ playlist['id'] }}" checked>
+                    {% else %}
+                    <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                        value="{{ playlist['id'] }}">
+                    {% endif %}
+                    {% if playlist['images'] %}
+                    <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
+                    {% else %}
+                    <div class="image-parent"><img src="static/EmptyPlaylist.png" class="img-fluid"></div>
+                    {% endif %}
 
-                <div class="ms-3"> {{ playlist['name'] }} </div>
-            </label>
-            {% endfor %}
-        </div>
-    </form>
+                    <div class="ms-3"> {{ playlist['name'] }} </div>
+                </label>
+                {% endfor %}
+            </div>
+        </form>
 
-</div>
-{% endblock %}
+    </div>
+    {% endblock %}

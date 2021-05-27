@@ -3,21 +3,6 @@
   max-width: 45px;
 }
 
-
-/* Custom default button */
-/*
-.btn-secondary,
-.btn-secondary:hover,
-.btn-secondary:focus {
-  color: #333;
-  text-shadow: none; 
-}
-*/
-
-/* Custom page CSS
--------------------------------------------------- */
-/* Not required for template or sticky footer method. */
-
 main > .container {
   padding: 60px 15px 0;
 }
@@ -75,3 +60,37 @@ a.mylink:hover {
   border-color: #1ED760;
 }
 
+audio {
+  width:100% !important;
+  min-height: 30px;
+  display:block;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+tr {
+  vertical-align: middle;
+}
+
+table.table.table-borderless td {
+  padding-top: 0.1em !important;
+  padding-bottom: 0.1em !important;
+}
+
+.bar-box {
+  height: 110px;
+  overflow: auto;
+}
+
+.left-cell {
+  width: 1%;
+  padding-left: 0em !important;
+  /* text-align: right; */
+}
+
+.right-cell {
+  width: 99%;
+  padding-right: 0em !important;
+}
