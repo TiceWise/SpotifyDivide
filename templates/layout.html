@@ -64,8 +64,8 @@
     <main class="flex-shrink-0">
         <div class="container">
             {% if get_flashed_messages() %}
-            <header>
-                <div class="alert alert-success text-center alert-dismissible fade show" role="alert">
+            <header class="d-flex justify-content-center">
+                <div class="alert alert-success text-center alert-dismissible fade show col-xxl-6" role="alert">
                     {{ get_flashed_messages() | join(" ") }}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>

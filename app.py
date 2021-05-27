@@ -1,20 +1,24 @@
 from flask import Flask, render_template, redirect, request, session, flash
 from flask import url_for
+from flask_session import Session
 import spotipy
 import os
 import uuid
 from functools import wraps
 from datetime import timedelta
 
-# import time
+import time
 
 app = Flask(__name__)
 app.config.from_pyfile("config.py")
-app.secret_key = app.config["SECRET_SESSION_KEY"]
+Session(app)
+# app.secret_key = app.config["SECRET_SESSION_KEY"]
 
 # help from:
-# https://stackoverflow.com/questions/57580411/storing-spotify-token-in-flask-session-using-spotipy
-# https://www.digitalocean.com/community/tutorials/how-to-make-a-web-application-using-flask-in-python-3
+# https://stackoverflow.com/questions/57580411/...
+# ...storing-spotify-token-in-flask-session-using-spotipy
+# https://www.digitalocean.com/community/tutorials/...
+# ...how-to-make-a-web-application-using-flask-in-python-3
 
 # create a cache folder in general
 caches_folder = "./.spotify_caches/"
@@ -270,6 +274,8 @@ def divide():
 
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
+        # Then...
+        # - load from session in the post stream
         return "TODO"
     # the user landed on the page... so get playlists from spotify
     else:
@@ -277,7 +283,7 @@ def divide():
         source_playlist = session.get("source_playlist")
         if not source_playlist:
             flash("No source playlist selected, select a source playlist in step 1.")
-            return redirect(url_for("select_target"))
+            return redirect(url_for("select_source"))
 
         if source_playlist == "liked_songs":
             tr = spotify.current_user_saved_tracks()
@@ -286,15 +292,26 @@ def divide():
             # TODO: possibly 'playlist_items', we can also move podcasts
 
         if len(tr["items"]) == 0:
-            flash("Playlist is empty, select an other source playlist.")
-            return redirect(url_for("select_target"))
+            flash("Source playlist is empty, select another source playlist.")
+            return redirect(url_for("select_source"))
 
         tracks = tr["items"]
         while tr["next"]:
             tr = spotify.next(tr)
             tracks.extend(tr["items"])
 
+        # remove non-track items
+        for track in reversed(tracks):
+            if track["track"]["type"] != "track":
+                tracks.remove(track)
+
         # print(len(tracks))
+        if len(tr["items"]) == 0:
+            flash(
+                "Source playlist only contains non-track items (Podcasts), "
+                "select another playlist."
+            )
+            return redirect(url_for("select_source"))
 
         # check the target playlists
         if not session.get("target_playlist_ids"):
@@ -304,13 +321,14 @@ def divide():
             )
             return redirect(url_for("select_target"))
 
-        # TODO... check if we own the target playlists?...
+        # TODO... check if we own the target playlists?... Should be the only
+        # selectable options tho...
 
         target_playlist_ids = session.get("target_playlist_ids")
 
-        playlists = []
+        target_playlists = []
         for target_playlist_id in target_playlist_ids:
-            playlists.append(spotify.playlist(target_playlist_id))
+            target_playlists.append(spotify.playlist(target_playlist_id))
 
         # We only display the playlists that the user can edit: must be owned
         # by the user and not collaborative
@@ -329,25 +347,199 @@ def divide():
 
         # return template with the playlists
 
-        """
-        TODO: STORE DATA IN SESSION:
-        - playlists (just the name and id's? Store that info earlier with
-          the target selection where we still have it?)
-        - tracklist
-        - iteration number [initialize in GET to 0]
+        # STORE DATA IN SESSION: (note that this is only done in GET, when
+        # the page is loaded.)
+        # - playlists just the name and id's? TODO: Store that info earlier
+        #       with the target selection where we still have it?)
+        # - tracklist
+        # - iteration number [initialize in GET to 0]
+        session["target_playlists"] = target_playlists
+        session["tracks"] = tracks
+        session["track_counter"] = 0
 
-        Then...
-        - load from session in the post stream
+        # Also...
+        # - use the same way to 'render?', or is it rel. short code already?..
+        # - we need next, previous, Move and next, and move and prev - buttons
+        # - these button change to copy if 'delete from playlist' isn't
+        #   selected?
 
-        Also...
-        - use the same way to 'render?', or is it rel. short code already?..
-        - we need next, previous, Move and next, and move and prev - buttons
-        - these button change to copy if 'delete from playlist' isn't selected?
-        """
+        return render_divide()
 
-        track = tracks[0]["track"]
 
-        return render_template("divide.html", playlists=playlists, track=track)
+def render_divide():
+    track = session.get("tracks")[session.get("track_counter")]["track"]
+    # date_added = session.get("tracks")[
+    # session.get("track_counter")]["added_at"]
+    # added_by = date_added = session.get("tracks")[
+    # session.get("track_counter")]["added_by"]
+
+    # specifically to retreive label info...
+    spotify = get_spotify()
+    albuminfo = spotify.album(track["album"]["id"])
+
+    genres = []
+    for artist in track["artists"]:
+        genres.extend(spotify.artist(artist["id"])["genres"])
+
+    # genre
+
+    # TODO: uri/link for track, album and artist (once hoveredd over)?
+    #   needs seperate artists.. but can be achieved with jinja for loop
+    # TODO: add info on how to enable autoplay
+
+    # TODO: song analysis info
+    # TODO: Added to playlist info?...
+
+    track_features = spotify.audio_features(track["id"])
+    key = track_features[0]["key"]
+    mode = key = track_features[0]["mode"]
+
+    feature_strings = [
+        "energy",
+        "danceability",
+        "valence",
+        "speechiness",
+        "acousticness",
+        "instrumentalness",
+        "liveness",
+    ]
+
+    bar_colors = [
+        "#4000F5",
+        "#CDF563",
+        "#CB1381",
+        "#9CF0E1",
+        "#EF891C",
+        "#EC5541",
+        "#CC200E",
+        "#721107",
+    ]
+
+    feature_list = []
+    popularity_data = {
+        "name": "Popularity",
+        "value": track["popularity"],
+        "color": bar_colors[0],
+        # "color": "#CCF462",
+    }
+    feature_list.append(popularity_data)
+
+    for i, feature in enumerate(feature_strings, start=1):
+        data = {
+            "name": feature.title()[:12],
+            "value": round(float(track_features[0][feature]) * 100),
+            "color": bar_colors[i],
+        }
+        feature_list.append(data)
+
+    # uri = "https://embed.spotify.com/?uri=" + track["uri"]
+    return render_template(
+        "divide.html",
+        playlists=session["target_playlists"],
+        title=track["name"],
+        album=track["album"]["name"],
+        album_type=track["album"]["album_type"],
+        track_type=track["type"],
+        image_url=track["album"]["images"][0]["url"],
+        artist_str=", ".join([artist["name"] for artist in track["artists"]]),
+        preview_url=track["preview_url"],
+        label=albuminfo["label"],
+        release_date=track["album"]["release_date"],
+        duration_str=time_string(int(track["duration_ms"])),
+        genres_str=", ".join(genres),
+        bpm=track_features[0]["tempo"],
+        key_tone=get_key(key, mode, key_type="tonal"),
+        key_cam=get_key(key, mode, key_type="camelot"),
+        feature_list=feature_list,
+    )
+
+
+def time_string(dur):
+    """
+    transform time in ms to nice text:
+    ## m ## s
+    # or
+    ## h ## m
+    """
+    dur = dur / 1000
+    seconds = dur % 60
+    seconds = int(seconds)
+    minutes = (dur / 60) % 60
+    minutes = int(minutes)
+    hours = (dur / 60) / 60 % 60
+    hours = int(hours)
+
+    if hours == 0:
+        return "%2d min %2d sec" % (minutes, seconds)
+    elif hours > 0:
+        return "%2d hr %2d min" % (hours, minutes)
+
+
+def get_key(key, mode, key_type="camelot"):
+    """
+    transform the spotify key into something understandable
+    key_type options: camelot, tonal, or both
+    """
+
+    if key == 0:
+        key_str_cam = "8"
+        key_str_ton = "C"
+    elif key == 1:
+        key_str_cam = "3"
+        key_str_ton = "C#"
+    elif key == 2:
+        key_str_cam = "10"
+        key_str_ton = "D"
+    elif key == 3:
+        key_str_cam = "5"
+        key_str_ton = "D#"
+    elif key == 4:
+        key_str_cam = "12"
+        key_str_ton = "E"
+    elif key == 5:
+        key_str_cam = "7"
+        key_str_ton = "F"
+    elif key == 6:
+        key_str_cam = "2"
+        key_str_ton = "F#"
+    elif key == 7:
+        key_str_cam = "9"
+        key_str_ton = "G"
+    elif key == 8:
+        key_str_cam = "4"
+        key_str_ton = "G#"
+    elif key == 9:
+        key_str_cam = "11"
+        key_str_ton = "A"
+    elif key == 10:
+        key_str_cam = "6"
+        key_str_ton = "A#"
+    elif key == 11:
+        key_str_cam = "1"
+        key_str_ton = "B"
+    else:
+        key_str_cam = "n/a"
+        key_str_ton = "n/a"
+
+    # major and minor additions
+    if mode == 1:
+        mode_str_cam = "B"  # major
+        mode_str_ton = ""  # major
+    elif mode == 0:
+        mode_str_cam = "A"  # minor
+        mode_str_ton = "m"  # major
+    else:
+        mode_str_cam = "n/a"  # minor
+        mode_str_ton = "n/a"  # major
+
+    if key_type == "camelot":
+        return key_str_cam + mode_str_cam
+    elif key_type == "tonal":
+        return key_str_ton + mode_str_ton
+    elif key_type == "both":
+        return key_str_cam + mode_str_cam + " - " + key_str_ton + mode_str_ton
+    else:
+        return ""
 
 
 if __name__ == "__main__":

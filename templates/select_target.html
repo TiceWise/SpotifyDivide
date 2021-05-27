@@ -5,7 +5,7 @@ Step 2: Select Target
 {% endblock %}
 
 {% block main %}
-<div class="col-lg-8 mx-auto">
+<div class="col-lg-9 mx-auto">
     <H3 class="mt-4 mb-3">2: Select all possible target playlists you want to move the tracks to:</H3>
     <p class="my-3">Note that your playlists are already filterd, as the playlist must be created
         by you (you must be the owner) and playlist can't be a collaborative playlist.
@@ -17,7 +17,7 @@ Step 2: Select Target
             <!--https://stackoverflow.com/questions/386281/how-to-implement-select-all-check-box-in-html-->
             <script language="JavaScript">
                 function toggle(source) {
-                    checkboxes = document.getElementsByName('target_playlists');
+                    checkboxes = document.getElementsByName('target_playlist_ids');
                     for (var i = 0, n = checkboxes.length; i < n; i++) {
                         checkboxes[i].checked = source.checked;
                     }
@@ -40,10 +40,10 @@ Step 2: Select Target
             <!-- https://codepen.io/cristinaconacel/pen/OBOjLg -->
             <label class="list-group-item list-group-item-action d-flex align-items-center text-light">
                 {% if playlist['checked'] %}
-                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                <input class="form-check-input me-3" type="checkbox" name="target_playlist_ids"
                     value="{{ playlist['id'] }}" checked>
                 {% else %}
-                <input class="form-check-input me-3" type="checkbox" name="target_playlists"
+                <input class="form-check-input me-3" type="checkbox" name="target_playlist_ids"
                     value="{{ playlist['id'] }}">
                 {% endif %}
                 {% if playlist['images'] %}

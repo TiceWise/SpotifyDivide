@@ -3,3 +3,4 @@ __pycache__/
 .spotify_caches/
 .vscode/
 .DS_Store
+.flask_session/
