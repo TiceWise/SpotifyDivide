@@ -94,3 +94,15 @@ table.table.table-borderless td {
   width: 99%;
   padding-right: 0em !important;
 }
+
+.small-button {
+  width: 88px;
+}
+
+.wide-button {
+  width: 164px;
+}
+
+.alert {
+  margin-bottom: 0em;
+}
