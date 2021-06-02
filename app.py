@@ -43,7 +43,7 @@ def session_cache_path():
 def make_session_permanent():
     """Set session lifetime before each request."""
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(days=31)
+    app.permanent_session_lifetime = timedelta(days=7)
 
 
 def login_required(f):
@@ -112,6 +112,10 @@ def login():
     if not session.get("uuid"):
         # Step 1. Visitor is unknown, give random ID
         session["uuid"] = str(uuid.uuid4())
+        # initialize some settings for the divide page
+        session["action_playlist_ids"] = []
+        session["radio_action"] = "radio_move"
+        session["select_all"] = None
 
     cache_handler = spotipy.cache_handler.CacheFileHandler(
         cache_path=session_cache_path()
@@ -470,11 +474,6 @@ def divide():
 
         # TODO... check if we own the target playlists?... Should be the only
         # selectable options tho based on previous settings
-
-        # initialize page settings:
-        session["action_playlist_ids"] = []
-        session["radio_action"] = "radio_move"
-        session["select_all"] = None
 
         target_playlist_ids = session.get("target_playlist_ids")
 

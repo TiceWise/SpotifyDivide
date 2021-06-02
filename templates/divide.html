@@ -111,34 +111,34 @@ Step 3: Divide!
                 <div class="my-2 d-flex justify-content-center">
                     <div>
                         {% if move_remove_enabled %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="radio_action" value="radio_move" 
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" id="radio_move" name="radio_action" value="radio_move" 
                             {% if radio_action == 'radio_move' %} checked {% endif %}>
                             <label class="form-check-label" for="radio_move">
                                 Move (delete song from source playlist)
                             </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="radio_action" value="radio_copy"
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" id="radio_copy" name="radio_action" value="radio_copy"
                             {% if radio_action == 'radio_copy' %} checked {% endif %}>
                             <label class="form-check-label" for="radio_copy">
                                 Copy (keep song in source playlist)
                             </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="radio_action" value="radio_remove"
+                        </label>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" id="radio_remove" name="radio_action" value="radio_remove"
                             {% if radio_action == 'radio_remove' %} checked {% endif %}>
                             <label class="form-check-label" for="radio_remove">
                                 Remove (only delete from source playlist)
                             </label>
-                        </div>
+                        </label>
                         {% else %}
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="radio_action" value="radio_copy" checked>
+                        <label class="form-check">
+                            <input class="form-check-input" type="radio" id="radio_copy" name="radio_action" value="radio_copy" checked>
                             <label class="form-check-label" for="radio_copy">
                                 Copy (keep song in source playlist)
                             </label>
-                        </div>
+                        </label>
                         {% endif %}
                     </div>
                 </div>
