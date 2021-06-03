@@ -2,12 +2,16 @@
 import os
 
 # FLASK
-TESTING = True
-DEBUG = True
-SHOW_DIALOG = True
+# TESTING = True
+# DEBUG = True
+# SHOW_DIALOG = True
+TESTING = False
+DEBUG = False
+SHOW_DIALOG = False
 SESSION_TYPE = "filesystem"
 SESSION_FILE_DIR = "./.flask_session/"
-FLASK_ENV = "development"
+# FLASK_ENV = "development"
+FLASK_ENV = "production"
 SECRET_KEY = os.environ.get("SECRET_SESSION_KEY")
 
 # SPOTIFY

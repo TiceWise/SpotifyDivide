@@ -738,4 +738,5 @@ def get_key(key, mode, key_type="camelot"):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run()
