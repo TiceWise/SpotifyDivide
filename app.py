@@ -9,15 +9,15 @@ import uuid
 from functools import wraps
 from datetime import timedelta
 
-# import google.appengine.api
-# import time
-# from google.cloud import storage
+# from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-# app.wsgi_app = google.appengine.api.wrap_wsgi_app(app.wsgi_app)
+
 app.config.from_pyfile("config.py")
+# db = SQLAlchemy(app)
 Session(app)
-# app.secret_key = app.config["SECRET_SESSION_KEY"]
+
+# my_session.app.session_interface.db.create_all()
 
 # help from:
 # https://stackoverflow.com/questions/57580411/...
@@ -27,19 +27,22 @@ Session(app)
 
 # create a cache folder in general
 
+# initiate database
+
+# class User(db.Model):
+#     uuid = db.Column(db.String(36), primary_key=True)
+# token_info = None
+# radio_action = None
+# select_all = None
+# source_playlist = None
+# track_counter = None
+# more_remove_enabled = None
+
 # TODO: create account system + database to store selected target playlists...
 # Without login" we need to store some info on client side; uuid, and
 # preferably selected playlists. But we need the server session to transfer
 # the loaded data between the divide renders/button presses...
 # TODO: use flask 'g' for track info, and session for the rest?
-
-# CLOUD_STORAGE_BUCKET = os.environ['CLOUD_STORAGE_BUCKET']
-
-# Create a Cloud Storage client.
-# gcs = storage.Client()
-# bucket = gcs.get_bucket(CLOUD_STORAGE_BUCKET)
-# blob = bucket.blob('spotify_caches/')
-
 
 # class CacheBlobHandler:
 #     """
