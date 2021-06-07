@@ -52,7 +52,8 @@ SCOPE = (
 )
 
 API_BASE = "https://accounts.spotify.com"
-REDIRECT_URI = "https://spodivide.herokuapp.com/login"
+# REDIRECT_URI = "https://spodivide.herokuapp.com/login"
+REDIRECT_URI = "http://spodivide.com/login"
 # REDIRECT_URI = "https://spodivide.com/login"
 # REDIRECT_URI = "http://127.0.0.1:5000/login"
 # Make sure you add this to Redirect URIs in the setting of the
