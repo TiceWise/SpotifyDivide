@@ -9,9 +9,12 @@ import uuid
 from functools import wraps
 from datetime import timedelta
 
+# import google.appengine.api
 # import time
+# from google.cloud import storage
 
 app = Flask(__name__)
+# app.wsgi_app = google.appengine.api.wrap_wsgi_app(app.wsgi_app)
 app.config.from_pyfile("config.py")
 Session(app)
 # app.secret_key = app.config["SECRET_SESSION_KEY"]
@@ -28,8 +31,36 @@ Session(app)
 # Without login" we need to store some info on client side; uuid, and
 # preferably selected playlists. But we need the server session to transfer
 # the loaded data between the divide renders/button presses...
+# TODO: use flask 'g' for track info, and session for the rest?
 
-caches_folder = "./.spotify_caches/"
+# CLOUD_STORAGE_BUCKET = os.environ['CLOUD_STORAGE_BUCKET']
+
+# Create a Cloud Storage client.
+# gcs = storage.Client()
+# bucket = gcs.get_bucket(CLOUD_STORAGE_BUCKET)
+# blob = bucket.blob('spotify_caches/')
+
+
+# class CacheBlobHandler:
+#     """
+#     Modified version for handling the caching and retrieval of authorization tokens.
+
+#     Based on abstraction CacheHandler() in cache_handler.py of spotipy.
+#     Handles reading and writing Spotify authorization tokens
+#     """
+
+#     def get_cached_token(self):
+#         """Get and return a token_info dictionary object."""
+#         # return token_info
+#         raise NotImplementedError()
+
+#     def save_token_to_cache(self, token_info):
+#         """Save a token_info dictionary object to the cache and return None."""
+#         raise NotImplementedError()
+#         return None
+
+
+caches_folder = "./.spotify_caches"
 if not os.path.exists(caches_folder):
     os.makedirs(caches_folder)
 
