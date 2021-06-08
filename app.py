@@ -8,21 +8,18 @@ import os
 import uuid
 from functools import wraps
 from datetime import timedelta
+from config import ProductionConfig, DevelopmentConfig
 
 app = Flask(__name__)
 
-app.config.from_pyfile("config.py")
-# db = SQLAlchemy(app)
+app.config.from_object("config.ProductionConfig")
 Session(app)
-
-# my_session.app.session_interface.db.create_all()
 
 # help from:
 # https://stackoverflow.com/questions/57580411/...
 # ...storing-spotify-token-in-flask-session-using-spotipy
 # https://www.digitalocean.com/community/tutorials/...
 # ...how-to-make-a-web-application-using-flask-in-python-3
-
 
 
 # TODO: create account system + database to store selected target playlists...
@@ -64,7 +61,7 @@ def session_cache_path():
 def make_session_permanent():
     """Set session lifetime before each request."""
     session.permanent = True
-    app.permanent_session_lifetime = timedelta(days=7)
+    app.permanent_session_lifetime = timedelta(hours=1)
 
 
 def login_required(f):
@@ -202,15 +199,12 @@ def select_source():
     """
     # TODO: user input field for spotify uri?
 
-    # tic = time.perf_counter()
-
     # get the spotify thingy
     spotify = get_spotify()
 
     # if the user clicked on a playlist, go to next step
     if request.method == "POST":
         session["source_playlist"] = request.form.get("playlist_btn")
-        # print(session.get("source_playlist"))
         return redirect(url_for("select_target"))
     # the user landed on the page... so get playlists from spotify
     else:
@@ -222,8 +216,9 @@ def select_source():
             pl = spotify.next(pl)
             playlists.extend(pl["items"])
 
-        # toc = time.perf_counter()
-        # print(f"Select source total code time: {toc - tic:0.4f} seconds")
+        # TODO: fixed images somewhat quick and dirty in the html templates:
+        # I wanted to get the smallest images to safe bandwidth and memory
+        # so set het image index to -1; the last spotify image index.
 
         # return template with the playlists
         return render_template("select_source.html", playlists=playlists)
@@ -241,8 +236,6 @@ def select_target():
     owned by the user and not collaborative))
     """
     # TODO: user input field for spotify uri's + parse?
-
-    # tic = time.perf_counter()
 
     # get the spotify thingy
     spotify = get_spotify()
@@ -321,11 +314,6 @@ def divide():
         # previous or next butoon clicked? returns button name (btn_prev or btn_next)
         btn_clicked = request.form["btn_clicked"]
 
-        # print(session.get("action_playlist_ids"))
-        # print(session.get("radio_action"))
-        # print(session.get("select_all"))
-        # print(btn_clicked)
-
         if (btn_clicked != "btn_next") and (btn_clicked != "btn_prev"):
             flash("Something went wrong... (unexpected POST method/button click)")
             return redirect(url_for("divide"))
@@ -387,12 +375,6 @@ def divide():
                 # TODO: double check if user is owner? Tho 'Copy' should be
                 # only option in that case, and this will just return an error
                 # so not destructive..
-                # print(
-                #     {
-                #         "uri": track_data["id"],
-                #         "positions": [session.get("track_counter")],
-                #     }
-                # )
                 spotify.playlist_remove_specific_occurrences_of_items(
                     playlist_id=session.get("source_playlist"),
                     items=[
@@ -462,7 +444,6 @@ def divide():
             else:
                 track["skip"] = False
 
-        # print(len(tracks))
         if len(tr["items"]) == skip_count:
             flash(
                 "Source playlist only contains non-track items (Podcasts), "
@@ -498,9 +479,32 @@ def divide():
 
         target_playlist_ids = session.get("target_playlist_ids")
 
-        target_playlists = []
-        for target_playlist_id in target_playlist_ids:
-            target_playlists.append(spotify.playlist(target_playlist_id))
+        # reading each playlist from the spotify api takes about 0.1 per playlist
+        # so if many playlists are selected this can take a long time, all my playlists
+        # resulted in about 15 seconds!... the target loading of step 2 takes 0.8 - 2.2
+        # seconds so... let's use that method (and pop) if we have more than x
+        # playlists...
+        # After timing both option multiple times, i measured that loading all playlists
+        # and popping was faster as of the length of 7 playlists.
+
+        if len(target_playlist_ids) < 7:
+            target_playlists = []
+            for target_playlist_id in target_playlist_ids:
+                target_playlists.append(spotify.playlist(target_playlist_id))
+
+        else:
+            pl = spotify.current_user_playlists()
+            target_playlists = pl["items"]
+
+            # loop till we get all playlists...
+            while pl["next"]:
+                pl = spotify.next(pl)
+                target_playlists.extend(pl["items"])
+
+            for playlist in reversed(target_playlists):
+                # remove not-owned and collaborative playlists
+                if playlist["id"] not in target_playlist_ids:
+                    target_playlists.remove(playlist)
 
         # STORE DATA IN SESSION: (note that this is only done in GET, when
         # the page is loaded.)
@@ -519,12 +523,7 @@ def divide():
 
         session["track_counter"] = track_counter
 
-        # Also...
-        # - use the same way to 'render?', or is it rel. short code already?..
-        # - we need next, previous, Move and next, and move and prev - buttons
-        # - these button change to copy if 'delete from playlist' isn't
-        #   selected?
-
+        # render the divide page
         return render_divide()
 
 

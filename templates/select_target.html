@@ -46,7 +46,7 @@ Step 2: Select Target
                 <input class="form-check-input me-3" type="checkbox" name="target_playlist_ids"
                     value="{{ playlist['id'] }}" {% if playlist['checked'] %} checked {% endif %}>
                 {% if playlist['images'] %}
-                <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
+                <div class="image-parent"><img src={{ playlist['images'][-1]['url'] }} class="img-fluid"></div>
                 {% else %}
                 <div class="image-parent"><img src="static/EmptyPlaylist.png" class="img-fluid"></div>
                 {% endif %}

@@ -20,7 +20,7 @@ Step 1: Select Source
         <button type="submit" name="playlist_btn" value={{ playlist['id'] }}
             class="list-group-item list-group-item-action d-flex align-items-center text-light">
             {% if playlist['images'] %}
-            <div class="image-parent"><img src={{ playlist['images'][0]['url'] }} class="img-fluid"></div>
+            <div class="image-parent"><img src={{ playlist['images'][-1]['url'] }} class="img-fluid"></div>
             {% else %}
             <div class="image-parent"><img src="static/EmptyPlaylist.png" class="img-fluid"></div>
             {% endif %}
