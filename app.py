@@ -9,8 +9,6 @@ import uuid
 from functools import wraps
 from datetime import timedelta
 
-# from flask_sqlalchemy import SQLAlchemy
-
 app = Flask(__name__)
 
 app.config.from_pyfile("config.py")
@@ -25,18 +23,7 @@ Session(app)
 # https://www.digitalocean.com/community/tutorials/...
 # ...how-to-make-a-web-application-using-flask-in-python-3
 
-# create a cache folder in general
 
-# initiate database
-
-# class User(db.Model):
-#     uuid = db.Column(db.String(36), primary_key=True)
-# token_info = None
-# radio_action = None
-# select_all = None
-# source_playlist = None
-# track_counter = None
-# more_remove_enabled = None
 
 # TODO: create account system + database to store selected target playlists...
 # Without login" we need to store some info on client side; uuid, and
@@ -44,7 +31,7 @@ Session(app)
 # the loaded data between the divide renders/button presses...
 # TODO: use flask 'g' for track info, and session for the rest?
 
-# class CacheBlobHandler:
+# class CacheXHandler:
 #     """
 #     Modified version for handling the caching and retrieval of authorization tokens.
 
@@ -543,7 +530,7 @@ def divide():
 
 # TODO: bug report button?
 # TODO: buy me a beer button?
-# TODO: keep track of website visits... add google ads?
+# TODO: add google ads?
 
 
 def update_count(btn_clicked):
