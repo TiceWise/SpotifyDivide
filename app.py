@@ -12,7 +12,7 @@ from config import ProductionConfig, DevelopmentConfig
 
 app = Flask(__name__)
 
-app.config.from_object("config.DevelopmentConfig")
+app.config.from_object("config.ProductionConfig")
 Session(app)
 
 # help from:
