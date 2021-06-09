@@ -12,7 +12,7 @@ from config import ProductionConfig, DevelopmentConfig
 
 app = Flask(__name__)
 
-app.config.from_object("config.ProductionConfig")
+app.config.from_object("config.DevelopmentConfig")
 Session(app)
 
 # help from:
@@ -314,6 +314,10 @@ def divide():
         # previous or next butoon clicked? returns button name (btn_prev or btn_next)
         btn_clicked = request.form["btn_clicked"]
 
+        if (btn_clicked == "btn_next_no_action") or (btn_clicked == "btn_prev_no_action"):
+            session["track_counter"] = update_count(btn_clicked)
+            return render_divide()
+        
         if (btn_clicked != "btn_next") and (btn_clicked != "btn_prev"):
             flash("Something went wrong... (unexpected POST method/button click)")
             return redirect(url_for("divide"))
@@ -323,10 +327,9 @@ def divide():
         if not action_playlist_ids and radio_action == "radio_move":
             flash(
                 "No action taken as you've selected 'Move', but without a "
-                "target playlist. To delete a track from a playlist, please "
-                "use the 'Remove' action. To go to the next song without an "
-                "action, use 'Copy' action without selecting a playlist."
+                "target playlist."
             )
+            session["track_counter"] = update_count(btn_clicked)
             return render_divide()
 
         # on empty playlist and 'copy' return alert (no playlist selected). do change
@@ -548,12 +551,12 @@ def update_count(btn_clicked):
     # do while emulation, for skipping non-track songs
     condition = True
     while condition:
-        if btn_clicked == "btn_next":
+        if btn_clicked == "btn_next" or btn_clicked == "btn_next_no_action":
             if track_counter + 1 >= number_of_tracks:
                 track_counter = 0
             else:
                 track_counter += 1
-        elif btn_clicked == "btn_prev":
+        elif btn_clicked == "btn_prev" or btn_clicked == "btn_prev_no_action":
             if track_counter - 1 < 0:
                 track_counter = number_of_tracks - 1
             else:
@@ -573,7 +576,7 @@ def update_count(btn_clicked):
 
 
 def render_divide():
-    """Render the divide page. Get's info from session. Return html code."""
+    """Render the divide page. Gets info from session. Return html code."""
     # Get the track information from the current track
     track = session.get("tracks")[session.get("track_counter")]["track"]
     # date_added = session.get(

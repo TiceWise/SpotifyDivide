@@ -6,8 +6,9 @@ Step 1: Select Source
 
 {% block main %}
 <div class="col-lg-9 mx-auto">
-    <H3>Step 1: Select the source playlist which contains the tracks you want to divide:</H3>
-
+    <div class="my-3">
+        <H3>1: Select the playlist with the songs you want to divide:</H3>
+    </div>
     <!--https://stackoverflow.com/questions/50162274/getting-button-name-as-input-->
     <form class="list-group bg-dark" action="/select_source" method="post">
         <button type="submit" name="playlist_btn" value="liked_songs"

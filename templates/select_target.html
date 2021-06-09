@@ -6,17 +6,10 @@ Step 2: Select Target
 
 {% block main %}
 <div class="col-lg-9 mx-auto">
-    <H3 class="mb-3">2: Select all possible target playlists you want to move the tracks to:</H3>
-    <p class="my-2">This is an extra step to make the next step easier; working with all of your playlists might be
-        inconvenient. In the next step you select the actual playlist(s) to which you want to move each song.
-    </p>
-    <p class="my-2">Note that your playlists are already filterd, as the playlist must be created
-        by you (you must be the owner) and playlist can't be a collaborative playlist to be able to add the tracks to
-        that playlist.
-    </p>
+    <H3 class="mb-3">2: Select all playlists you might want to move the songs to:</H3>
     <form action="/select_target" method="post">
 
-        <button type="submit" class="btn btn-success my-2 d-flex mx-auto">Confirm Selection</button>
+        <button type="submit" class="btn btn-success rounded-pill my-2 py-2 ps-2 pe-3 d-flex mx-auto"><i class="bi-check-lg mx-2"></i>Confirm Selection</button>
         <div class="form-check mx-3 my-2">
             <!--https://stackoverflow.com/questions/386281/how-to-implement-select-all-check-box-in-html-->
             <script language="JavaScript">
