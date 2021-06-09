@@ -11,13 +11,19 @@ Log in
         <H2>Divide your Spotify Liked Songs over your playlists.</H2>
     </div>
     <div class="mx-auto">
-        <H3 class="lead text-left">1: Select your Liked Songs, or any other playlist from which you want to divide songs.</H3>
+        <H3 class="lead text-left">1: Select your Liked Songs, or any other playlist from which you want to divide
+            songs.</H3>
         <H3 class="lead text-left">2: Select all playlists you might want to move the songs to.</H3>
         <H3 class="lead text-left">3: Divide! Per song, determine to which playlists you want to move the song.</H3>
     </div>
     <div class="py-3 my-3 mx-auto">
         <H4>Log in with your Spotify account to begin:</H4>
-        <a id="login" href={{ auth_url }} class="btn btn-success rounded-pill my-2 py-2 px-4">LOG IN WITH SPOTIFY</a>
+        <a id="login" href={{ auth_url }} class="btn btn-success rounded-pill my-2 py-2 pe-4">
+            <div class='d-flex align-items-center'>
+                <img src="static/Spotify_Icon_RGB_White.png" alt="Spotify Icon" width="21" class="ms-1 me-2">LOG IN WITH
+                SPOTIFY
+            </div>
+        </a>
     </div>
 </div>
 {% endblock %}

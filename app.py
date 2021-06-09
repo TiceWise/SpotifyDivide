@@ -314,10 +314,12 @@ def divide():
         # previous or next butoon clicked? returns button name (btn_prev or btn_next)
         btn_clicked = request.form["btn_clicked"]
 
-        if (btn_clicked == "btn_next_no_action") or (btn_clicked == "btn_prev_no_action"):
+        if (btn_clicked == "btn_next_no_action") or (
+            btn_clicked == "btn_prev_no_action"
+        ):
             session["track_counter"] = update_count(btn_clicked)
             return render_divide()
-        
+
         if (btn_clicked != "btn_next") and (btn_clicked != "btn_prev"):
             flash("Something went wrong... (unexpected POST method/button click)")
             return redirect(url_for("divide"))
@@ -609,7 +611,23 @@ def render_divide():
 
     track_features = spotify.audio_features(track["id"])
     key = track_features[0]["key"]
-    mode = key = track_features[0]["mode"]
+    mode = track_features[0]["mode"]
+
+    # tic = time.perf_counter()
+    # track_analysis = spotify.audio_analysis(track["id"])
+    # toc = time.perf_counter()
+    # print(toc - tic)
+    # print(
+    #     "key: "
+    #     + str(key)
+    #     + " (conf: "
+    #     + str(track_analysis["track"]["key_confidence"])
+    #     + "), mode: "
+    #     + str(mode)
+    #     + " (conf: "
+    #     + str(track_analysis["track"]["mode_confidence"])
+    #     + ")"
+    # )
 
     feature_strings = [
         "energy",
@@ -658,7 +676,8 @@ def render_divide():
         track_type=track["type"],
         image_url=track["album"]["images"][0]["url"],
         artist_str=", ".join([artist["name"] for artist in track["artists"]]),
-        preview_url=track["preview_url"],
+        # preview_url=track["preview_url"],
+        uri=track["uri"],
         label=albuminfo["label"],
         release_date=track["album"]["release_date"],
         duration_str=time_string(int(track["duration_ms"])),

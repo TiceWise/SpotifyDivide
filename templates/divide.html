@@ -5,13 +5,12 @@ Step 3: Divide!
 {% endblock %}
 
 {% block main %}
-<div class="container col-lg-9 mx-auto">
+<div class="container col-sm-12 col-md-12 col-lg-10 col-xl-9 col-xxl-8 mx-auto">
     <H3 class="mb-3">3: Select the playlists you want to move this track to:</H3>
     <div class="row flex-xl-row justify-content-center align-items-center py-2">
-        <div class="container col-9 col-sm-9 col-md-4 col-lg-5 flex-row justify-content-center">
-            <img src={{ image_url }} class="d-block mx-auto img-fluid" alt="Album cover" loading="lazy" width="300"
-                height="300">
-
+        <div class="container col-sm-12 col-md-5 flex-row justify-content-center">
+            <img src={{ image_url }} class="d-block mx-auto img-fluid" alt="Album cover" loading="lazy" width="300">
+            <!--
             {% if preview_url %}
 
             <div id="audio-block" class="py-2">
@@ -24,14 +23,19 @@ Step 3: Divide!
                 audio.volume = 0.3;
                 // audio.style.width = '200px';
             </script>
-            <!--
-            <iframe src={{ uri }} width="250" height="80" allowtransparency="true"></iframe>
-        -->
+
+
             {% endif %}
+-->
+            <iframe class="d-block mx-auto my-3 spotify-widget"
+                src="https://open.spotify.com/embed/?uri={{ uri }}" frameborder="0"
+                allowtransparency="true" allow="encrypted-media"></iframe>
+
         </div>
-        <div class="col-md-8 col-lg-7">
-            <p class="mb-0">
-                {{ track_type | upper() }} &bull; <img src="static/Spotify_Logo_RGB_White.png" alt="Spotify logo" width="70"> 
+        <div class="col-md-7">
+            <p class="mb-0 d-flex align-items-center">             
+                {{ track_type | upper() }} &bull; <img class="ms-1" src="static/Spotify_Logo_RGB_White.png" alt="Spotify logo"
+                    width="70">
             </p>
             <h1 class="display-5 fw-bold mt-2">
                 {{ title }}
