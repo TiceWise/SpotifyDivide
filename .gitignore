@@ -5,3 +5,5 @@ __pycache__/
 .DS_Store
 .flask_session/
 app.yaml
+working_files/
+

@@ -41,7 +41,7 @@ class DevelopmentConfig(Config):
     SHOW_DIALOG = True
     FLASK_ENV = "development"
     # REDIRECT_URI = "http://192.168.1.21:5000/login"
-    REDIRECT_URI = "http://10.50.5.128:5000/login"
+    REDIRECT_URI = "http://192.168.1.17:5000/login"
 
 
 # API_BASE = "https://accounts.spotify.com"

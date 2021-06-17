@@ -115,6 +115,13 @@ def index():
     If so, redirect to select source page.
     """
     if not session.get("uuid") or not session.get("spotify_logged_in"):
+        if session.get("log_in_failed"):
+            flash(
+                "SpoDivide is currently in Beta (selected users only) and awaiting "
+                "Spotify Developer approval. Please try again in a few days. Hope "
+                "to see you then!"
+            )
+            session.pop("log_in_failed")
         return redirect(url_for("login"))
 
     return redirect(url_for("select_source"))
@@ -164,7 +171,14 @@ def login():
     # Step 4. Signed in, display data
     spotify = spotipy.Spotify(auth_manager=auth_manager)
 
-    user = spotify.me()
+    session["log_in_failed"] = False
+
+    try:
+        user = spotify.me()
+    except spotipy.exceptions.SpotifyException:
+        session["log_in_failed"] = True
+        return redirect("/logout")
+
     username = user["display_name"]
 
     session["spotify_logged_in"] = True
@@ -177,6 +191,12 @@ def login():
 @app.route("/logout")
 def logout():
     """Log the user out by deleting the cache file and clearing the session."""
+    # We have to carry over the login failed to "/"
+    if session.get("log_in_failed"):
+        track_log_in_failed = True
+    else:
+        track_log_in_failed = False
+
     try:
         # TODO: make this a bit smarter such that we can store the source-
         # and target playlists
@@ -185,7 +205,16 @@ def logout():
         session.clear()
     except OSError as e:
         print("Error: %s - %s." % (e.filename, e.strerror))
+
+    if track_log_in_failed:
+        session["log_in_failed"] = True
     return redirect("/")
+
+
+@app.route("/more_info")
+def more_info():
+    """Simply show webpage."""
+    return render_template("more_info.html")
 
 
 @app.route("/select_source", methods=["GET", "POST"])

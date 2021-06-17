@@ -47,13 +47,28 @@ footer {
   border-color: #1DB954 ;
 }
 
-a.mylink {
-  color: #66fcf1;
+.normallink{
+  color: #1ED760;
 }
 
-a.mylink:hover {
-  color: #45A29E;
+.normallink:hover, .mylink:visited, .mylink:active{
+  color: #1DB954;
 }
+
+.mylink{
+  color: #27e8a7;
+  font-family: 'Montserrat', sans-serif!important;
+  font-weight: bold;
+  text-decoration: none !important;
+}
+
+.mylink:hover, .mylink:visited, .mylink:active{
+  color: #32ae85;
+  font-family: 'Montserrat', sans-serif!important;
+  font-weight: bold;
+  text-decoration: none !important;
+}
+
 
 .form-check-input:checked{
   background-color: #1ED760;
@@ -112,4 +127,18 @@ table.table.table-borderless td {
   min-width: 250px;
   width: 100%;
   height: 80px;
+}
+
+.bd-placeholder-img {
+  font-size: 1.125rem;
+  text-anchor: middle;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+}
+
+@media (min-width: 768px) {
+  .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+  }
 }
