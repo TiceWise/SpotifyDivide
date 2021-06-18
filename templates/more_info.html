@@ -10,23 +10,34 @@ More information
     integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-<div class="container col-lg-8 mx-auto">
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function () {
+        var c = ".digital";
+        var b = "ce";
+        var a = "ti";
+        var d = "spodivide";
+        var subject = "SpoDivide Feedback";
+        document.getElementById("mailButton").href = 'mailto:' + d + '@' + a + b + c + '?subject=' + subject;
+    })
+</script>
+
+<div class="container col-lg-8 col-xl-7 col-xxl-6 mx-auto">
     <div class="text-center">
-        <H1 class="display-4 fw-bold d-inline-flex align-items-center"><img src="static/Spodivide_logo.svg" width="55px"
+        <H1 class="display-4 fw-bold d-inline-flex align-items-center"><img src="static/Spodivide_logo.svg" width="55px" height="55px"
                 class="me-3" alt="Spodivide icon"> SpoDivide</H1>
-        <div class="py-1 my-2 mb-5 mx-auto">
+        <div class="py-1 my-2 mb-4 mx-auto">
             <H4>Divide your Spotify Liked Songs over your playlists.</H4>
         </div>
     </div>
     <div class="mx-auto text-left">
         <H4>About</H4>
-        <p>I collect music by liking my Spotify songs. I listen to Discover Weekly, Release
-            Radar, and a number of other favourite playlists, and just <i class="far fa-heart"></i> everything i like.
+        <p>I save new music on Spotify by liking songs. I listen to Discover Weekly,
+            Release Radar, and a number of other favourite playlists, and just <i class="far fa-heart"></i> everything i like.
         </p>
         <p>I do have a lot of personal playlists too, for different genres and moods for example.
             It’s how I collect music. However, I never got around to divide my liked songs over these playlists. It was
-            just too much hassle, dragging and dropping each song to multiple playlist, sometimes 100+ songs. In
-            addition, I wanted more information on the songs I was moving, like genre and bpm.</p>
+            just too much hassle, dragging and dropping each song to multiple playlists, sometimes 100+ songs. In
+            addition, I wanted more information on the songs, like genre and bpm.</p>
         <p>That’s why I created SpoDivide.</p>
         <H4 class="mt-4">More details on use</H4>
         <H5>Step 1</H5>
@@ -50,52 +61,122 @@ More information
             and simply skip the others.
         </p>
         <H5>Step 3</H5>
-        <p>From left to right, top to bottom, we see: The album artwork, a preview option,
-            information and features of the track, confirmation and navigation buttons, the action you want to perform
-            (move, copy or remove) and the list to select the playlists to which you want to add the song. </p>
-        <p>
-            After 'Released on', the label on which the song was released is mentioned. BPM means Beats Per Minutes. The
-            musical key between parenthesis is the <a class="normallink" href="https://mixedinkey.com/harmonic-mixing-guide/"
-                target="_blank" rel="noopener noreferrer">Camelot Key</a>. To learn more about what each song feature
-            (like popularity, energy and danceability) means, please check the <a
-                href="https://developer.spotify.com/documentation/web-api/reference/#category-tracks" class="normallink" target="_blank"
-                rel="noopener noreferrer">Spotify documentation <i class="fas fa-arrow-right"></i> AudioFeaturesObject</a>.</p>
-        <p>
-            There are four navigation buttons, from left to right: previous song, previous song and confirm, next song
-            and confirm, next song. The buttons with confirm peform the action selected below on this song to the
-            playlist(s) selected below. The buttons without confirmation are used for navigation (next or previous song)
-            without performing any action.
+        <p>From left to right, top to bottom, we see:
+        <ol>
+            <li>The album artwork with a preview option below,</li>
+            <li>information of the track,</li>
+            <ol type="a">
+                <li>'Released on' indicates the label on which the song was released.</li>
+                <li>BPM means Beats Per Minutes.</li>
+                <li>The musical key between parenthesis is the <a class="normallink"
+                        href="https://mixedinkey.com/harmonic-mixing-guide/" target="_blank"
+                        rel="noopener noreferrer">Camelot Key</a>.</li>
+            </ol>
+            <li>
+                audio features of the track,
+                <ol type="i">
+                    <li>
+                        More info below
+                    </li>
+                </ol>
+            </li>
+            <li>confirmation and navigation buttons, (from left to right)</li>
+            <ol type="a">
+                <li>previous song,</li>
+                <li>previous song and confirm,</li>
+                <li>next song and confirm and</li>
+                <li>next song.</li>
+            </ol>
+            <ul>
+                <li>The buttons with confirm peform the action selected below on this song to the
+                    playlist(s) selected below.</li>
+                <li>The buttons without confirmation are used for navigation (next or previous song)
+                    without performing any action.</li>
+            </ul>
+
+            <li>the action you want to perform (move, copy or remove)</li>
+            <ol type="a">
+                <li><b>Move</b> adds the song to the selected
+                    playlist(s) and deletes the song from source playlist, or 'Unlikes' the song if the source
+                    playlist you selected in Step 1 is your Liked Songs.</li>
+                <li><b>Copy</b> adds the song to the selected playlist(s) and doesn't remove the song from the source
+                    playlist.</li>
+                <li><b>Remove</b> only deletes from source playlists without adding it to a playlist (for if you just
+                    don't like the
+                    song anymore).</li>
+            </ol>
+            <ul>
+                <li>Note that for the Copy and Remove action, you must be the owner of the source playlist and
+                    the source playlist can't be a collaborative playlists. In that case the Copy and Remove option are
+                    automatically hidden.</li>
+            </ul>
+            <li>and the list to select the playlists to which you want to add the song.</li>
+        </ol>
         </p>
-        <p>
-            The actions which you can perform are: Move, Copy and Remove. 'Move' adds the song to the selected
-            playlist(s) and deletes the song from source playlist, or 'Unlikes' the song if the source
-            playlist you selected in Step 1 is your Liked Songs.
-            'Copy' adds the song to the selected playlist(s) and doesn't remove the song from the source playlist.
-            'Remove' only deletes from source playlists without adding it to a playlist (for if you just don't like the
-            song anymore). Note that for the Copy and Remove action, you must be the owner of the source playlist and
-            the source playlist can't be a collaborative playlists. In that case the Copy and Remove option are
-            automatically hidden.
-        </p>
+
+        <H5>What does each audio feature mean?</H5>
+        <ul>
+
+            <ul>
+                <li><b>Popularity</b> is calculated by an algorithm and is based, in the most part, on the total number
+                    of plays the track has had and how recent those plays are.</li>
+                <li><b>Energy</b> represents a perceptual measure of intensity and activity. Typically, energetic tracks
+                    feel fast, loud, and noisy. </li>
+                <li><b>Danceability</b> describes how suitable a track is for dancing based on a combination of musical
+                    elements including tempo, rhythm stability, beat strength, and overall regularity.</li>
+                <li><b>Valence</b> describes the musical positiveness conveyed by a track. </li>
+                <li><b>Speechiness</b> detects the presence of spoken words in a track.</li>
+                <li><b>Acousticness</b> shows the confidence measure whether the track is acoustic. A higher number
+                    represents a high confidence the track is acoustic.</li>
+                <li><b>Instrumentalness</b> predicts whether a track contains no vocals. The higher the instrumentalness
+                    value is, the greater likelihood the track contains no vocal content.</li>
+                <li><b>Liveness detects</b> the presence of an audience in the recording. Higher liveness values
+                    represent an increased probability that the track was performed live. </li>
+                <li>To learn more, please check the source: <a
+                        href="https://developer.spotify.com/documentation/web-api/reference/#object-audiofeaturesobject"
+                        class="normallink" target="_blank" rel="noopener noreferrer">Spotify documentation <i
+                            class="fas fa-arrow-right"></i>
+                        AudioFeaturesObject</a>.</li>
+
+            </ul>
+        </ul>
         <p>
             That's it! For any other questions, unclearities, bugs, you name it, be sure to drop me a line!
         </p>
-        <H4>Feedback</H4>
+
+        <H4 class="mt-4">Feedback</H4>
         <p>
             I hope you enjoy using SpoDivide. If anything is unclear or not working, please let me know. If you just
-            want to say hi or thanks, that's no problem too!
-            <button></button> (work in progress, button comming soon!)
+            want to say hi or thanks, that's no problem too! Any feedback is welcome.
+        <div class="mx-auto text-center">
+
+            <a id="mailButton" href="mailto:hi@bot.bye" class="btn btn-success rounded-pill pe-4">
+                <div class='d-flex align-items-center'>
+                    <i class="far fa-envelope mx-2"></i>Send feedback
+                </div>
+            </a>
+        </div>
+
         </p>
-        <H4 id="data_privacy">Privacy and data</H4>
+        <H4 class="mt-4" id="data_privacy">Privacy and data</H4>
         <p>
             SpoDivide doesn't store or use your personal data in any way. Only the data SpoDivide needs is requested and
             used (these are: your username, your playlists and your liked songs). Your information will never be sold or
-            shared with Third Parties. No information is stored longer that the session + 1 hour. Use the 'Log
+            shared with Third Parties. No information is stored longer than one day after your session. Use the 'Log
             Out'-button in the top right to clear your data and to disconnect your account from SpoDivide immediately.
         </p>
-        <H4>Let's go!</H4>
+        
+        <H4 class="mt-4">Let's go!</H4>
         <p>
             That's a lot of reading, I'm ready to divide!
-            <button></button> (work in progress, button comming soon!)
+            <div class="mx-auto text-center ">
+            <a href="\" class="btn btn-success rounded-pill pe-4 d-inline-flex align-items-center">
+                <div class='d-inline-flex align-items-center'>
+                    <img src="static/Spodivide_logo.svg"
+                        width="20px" class="mx-2" alt="Spodivide icon"\><span>SpoDivide</span>
+                </div>
+            </a>
+            </div
         </p>
 
     </div>

@@ -1,0 +1,15 @@
+{
+    "short_name": "SpoDivide",
+    "name": "SpoDivide: Divide your Spotify Liked Songs over your playlists",
+    "icons": [
+      {
+        "src": "static/Spodivide_logo-google-touch-icon.png",
+        "type": "image/png",
+        "sizes": "512x512"
+      }
+    ],
+    "start_url": "/",
+    "background_color": "#121212",
+    "display": "fullscreen",
+    "theme_color": "#f8f9fa"
+  }

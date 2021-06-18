@@ -12,7 +12,7 @@
    x="0px"
    y="0px"
    id="svg841"
-   sodipodi:docname="noun_melting_2960784.svg"
+   sodipodi:docname="TICE_logo.svg"
    width="11.641666"
    height="11.64028"
    inkscape:version="1.0.2 (e86c8708, 2021-01-15)">
@@ -24,7 +24,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -61,20 +61,4 @@
        id="path833"
        style="fill:#27e8a7;fill-opacity:1" />
   </g>
-  <text
-     x="-0.52916646"
-     y="27.170141"
-     fill="#000000"
-     font-size="5px"
-     font-weight="bold"
-     font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
-     id="text837">Created by Phạm Thanh Lộc</text>
-  <text
-     x="-0.52916646"
-     y="32.170139"
-     fill="#000000"
-     font-size="5px"
-     font-weight="bold"
-     font-family="'Helvetica Neue', Helvetica, Arial-Unicode, Arial, Sans-serif"
-     id="text839">from the Noun Project</text>
 </svg>

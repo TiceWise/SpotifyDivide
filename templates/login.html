@@ -6,7 +6,7 @@ Log in
 
 {% block main %}
 <div class="container pt-5 text-center col-lg-10 mx-auto">
-    <H1 class="display-2 fw-bold d-inline-flex align-items-center"><img src="static/Spodivide_logo.svg" width="75px"
+    <H1 class="display-2 fw-bold d-inline-flex align-items-center"><img src="static/Spodivide_logo.svg" width="75px" height="75px"
             class="me-3" alt="Spodivide icon"> SpoDivide</H1>
     <div class="py-2 my-3 mx-auto">
         <H2>Divide your Spotify Liked Songs over your playlists.</H2>
@@ -21,14 +21,15 @@ Log in
         <H4>Log in with your Spotify account to begin:</H4>
         <a id="login" href={{ auth_url }} class="btn btn-success rounded-pill my-2 py-2 pe-4">
             <div class='d-flex align-items-center'>
-                <img src="static/Spotify_Icon_RGB_White.png" alt="Spotify Icon" width="21" class="ms-1 me-2">LOG IN WITH
+                <img src="static/Spotify_Icon_RGB_White.png" alt="Spotify Icon" width="21px" height="21px" class="ms-1 me-2">LOG IN WITH
                 SPOTIFY
             </div>
         </a>
-        <div class="col-md-6 mx-auto my-2">
-            <small>SpoDivide doesn't store or use your personal data in any way. For more information see <a
-                    class="normallink" href="/more_info">More Information -
+        <div class="col-6 col-sm-6 col-md-5  mx-auto my-2">
+            <small>SpoDivide doesn't store or use your personal data in any way. See <a
+                    class="normallink" href="{{ url_for('more_info', _anchor='data_privacy') }}">More Information -
                     Privacy and Data</a></small>
+                    <!-- the _anchor tip came from: https://stackoverflow.com/questions/35843675/link-to-a-specific-location-in-a-flask-template -->
         </div>
     </div>
 </div>
