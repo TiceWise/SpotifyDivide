@@ -58,8 +58,13 @@ def session_cache_path():
 
 
 @app.before_request
-def make_session_permanent():
-    """Set session lifetime before each request."""
+def before_request():
+    """Force HTTPS and set session lifetime before each request."""
+    if 'DYNO' in os.environ:
+        if request.url.startswith('http://'):
+            url = request.url.replace('http://', 'https://', 1)
+            code = 301
+            return redirect(url, code=code)
     session.permanent = True
     app.permanent_session_lifetime = timedelta(hours=1)
 
