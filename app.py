@@ -60,6 +60,7 @@ def session_cache_path():
 @app.before_request
 def before_request():
     """Force HTTPS and set session lifetime before each request."""
+    # https://stackoverflow.com/questions/8436666/how-to-make-python-on-heroku-https-only
     if 'DYNO' in os.environ:
         if request.url.startswith('http://'):
             url = request.url.replace('http://', 'https://', 1)
