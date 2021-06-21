@@ -61,9 +61,9 @@ def session_cache_path():
 def before_request():
     """Force HTTPS and set session lifetime before each request."""
     # https://stackoverflow.com/questions/8436666/how-to-make-python-on-heroku-https-only
-    if 'DYNO' in os.environ:
-        if request.url.startswith('http://'):
-            url = request.url.replace('http://', 'https://', 1)
+    if "DYNO" in os.environ:
+        if request.url.startswith("http://"):
+            url = request.url.replace("http://", "https://", 1)
             code = 301
             return redirect(url, code=code)
     session.permanent = True
@@ -123,9 +123,9 @@ def index():
     if not session.get("uuid") or not session.get("spotify_logged_in"):
         if session.get("log_in_failed"):
             flash(
-                "Divide for Spotify is currently in Beta (selected users only) and awaiting "
-                "Spotify Developer approval. Please try again in a few days. Hope "
-                "to see you then!"
+                "Divide for Spotify is currently in Beta (selected users only) and "
+                "awaiting Spotify Developer approval. Please try again in a few days. "
+                "Hope to see you then!"
             )
             session.pop("log_in_failed")
         return redirect(url_for("login"))
