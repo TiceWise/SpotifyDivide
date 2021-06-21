@@ -123,7 +123,7 @@ def index():
     if not session.get("uuid") or not session.get("spotify_logged_in"):
         if session.get("log_in_failed"):
             flash(
-                "SpoDivide is currently in Beta (selected users only) and awaiting "
+                "Divide for Spotify is currently in Beta (selected users only) and awaiting "
                 "Spotify Developer approval. Please try again in a few days. Hope "
                 "to see you then!"
             )
