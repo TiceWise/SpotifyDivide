@@ -30,7 +30,7 @@ class ProductionConfig(Config):
     DEBUG = False
     SHOW_DIALOG = False
     FLASK_ENV = "production"
-    REDIRECT_URI = "https://divideforspotify.herokuapp.com/login"
+    REDIRECT_URI = "https://divideforspotify.com/login"
 
 
 class DevelopmentConfig(Config):
