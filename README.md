@@ -6,7 +6,7 @@ Divide your Spotify Liked Songs over your playlists.
 2. Select all playlists you might want to move the songs to.
 3. Divide! Per song, determine to which playlists you want to move the song.
 
-##### About
+## About
 
 I save new music on Spotify by liking songs. I listen to Discover Weekly, Release Radar, and a number of other favourite playlists, and just heart everything i like.
 
@@ -16,18 +16,18 @@ That’s why I created Divide for Spotify.
 
 The app is reviewed and accepted by the Spotify Developer Platform team.
 
-##### More details on use
-###### Step 1
+## More details on use
+### Step 1
 Step 1 is pretty straight forward: Select the playlist from which you want to divide your songs. Often this will be your Liked Songs, but you can also select any other playlist from which you want to divide songs. For example Discover Weekly or Release Radar, or any other playlist that contains many songs you want to add to your own playlists.
 
-###### Step 2
+### Step 2
 This is an extra step to make your life easier in step 3. If you have a lot of playlists (like me), you probably don't want to add songs to most of them. Step 2 is a pre-selection for playlists that are available in Step 3. Of course you're free to use all of your playlists with 'Select all'!
 
 Note that your playlists are already filtered. For Divide for Spotify to be able to add songs to a playlist, the playlist must be created by you (you must be the owner) and playlist can't be a collaborative playlist.
 
 Another use case of Divide for Spotify is creating a playlist for a special occasion: Create a playlist in Spotify, Select it as target, and just go through your Liked Songs; Add the songs you want to add for the occasion, and simply skip the others.
 
-###### Step 3
+### Step 3
 From left to right, top to bottom, we see:
 
 1. The album artwork with a preview option below,
@@ -51,13 +51,13 @@ From left to right, top to bottom, we see:
     - Note that for the Copy and Remove action, you must be the owner of the source playlist and the source playlist can't be a collaborative playlists. In that case the Copy and Remove option are automatically hidden.
 6. and the list to select the playlists to which you want to add the song.
 
-##### Feedback
+## Feedback
 I hope you enjoy using Divide for Spotify. If anything is unclear or not working, please let me know. If you just want to say hi or thanks, that's no problem too! Any feedback is welcome. Send feedback via: https://divideforspotify.com/more_info
 
-##### Privacy and data
+## Privacy and data
 Divide for Spotify doesn't store or use your personal data in any way. Only the data Divide for Spotify needs is requested and used (these are: your username, your playlists and your liked songs). Your information will never be sold or shared with Third Parties. No information is stored longer than one day after your session. Use the 'Log Out'-button in the top right to clear your data and to disconnect your account from Divide for Spotify immediately.
 
-##### About the development
+## File descriptions
 Description of what each file does:
 - The static folder contains my .css file, the required images (like empty playlist and liked songs album artwork) and all the logo's I created.
 - The templates folder contains all the .html templates which are rendered using flask (so jinja-html combination). Layout.html contains the lay-out which is loaded in the other template files.
@@ -68,18 +68,27 @@ Description of what each file does:
 - manifest.json ensures correct display, icon, and use as web app on Android.
 - requirements.txt contains the required python packages. Also needed for the Heroku dyno to load and install those packages.
 
-##### Design choices
+## Design choices
 
+#### Real web app
 First of all I decided to create it as a web app available for everybody, as an extra challenge. So everything had to be fool-proof and intuitive. 
 
+#### Approved by Spotify Developer Platform
 Spotify just introduced an approval-flow for new public apps using the Spotify API. In a way it was a help to do everything according to their developer requirements. It was approved today! (After changing the name from SpoDivide to Divide for Spotify.)
 
+#### Spotify look and feel
 For the look and feel (colors and such) I tried to follow Spotify as much as possible.
 
+#### Fully responsive (for mobile) with bootstrap
+
+#### Step 2 considerations and explanation versus use
 Step 2 is actually an extra step, at first it's not so clear what it does, but it is required for step 3, to make step 3 more workable. I think as soon as you are in step 3 and have clicked through everything once, you understand why it's there. Not sure how to make it more clear. The Steps and the way it all works is difficult to describe, but at the same time I think it how you use the app is actually really easy, so I want people to just start use it.
 
+#### Deploying/hosting and filesystem versus database
 For the deployment I first tried Google Cloud Application, but it was less stable, probably because of me using a local file system for the sessions. The 'tracks' information require a local file system, as it is quite some 'unorganized' information. I need to store it, as otherwise it needs to be reloaded in step 3 between each song, which would make the page-loads quite long. That's why I decided to keep everything as file-system session, and just switch to heroku for now. That actually works quite well so far, let's see how it goes with more traffic.
 
+#### Monetization
 Finally, I'm currently paying for a hobby dyno on heroku. Let's see how much interest and traffic I get. I might monetize the app with ads in the future.
 
-That's it! I'm really happy with how professional it looks and feels, proud of the result! Thanks for reading.
+## That's it! 
+I'm really happy with how professional it looks and feels, proud of the result! Thanks for reading.
