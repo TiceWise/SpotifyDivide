@@ -8,7 +8,7 @@ import os
 import uuid
 from functools import wraps
 from datetime import timedelta
-from config import ProductionConfig, DevelopmentConfig
+from config import ProductionConfig, DevelopmentConfig  # noqa: F401 (used as text)
 
 app = Flask(__name__)
 
@@ -88,7 +88,7 @@ def login_required(f):
 
 def get_spotify():
     """
-    Return the spotipy.Spotify for the current logged in user.
+    Get the Spotify API client for the current logged in user.
 
     User must be logged in to Spotify previously.
     """
@@ -116,7 +116,7 @@ def get_spotify():
 @app.route("/")
 def index():
     """
-    Check if user is logged in. If not, redirect to log in.
+    Check if user is logged in. If not, redirect to log in. If login failed, tell user.
 
     If so, redirect to select source page.
     """
@@ -127,7 +127,7 @@ def index():
                 "awaiting Spotify Developer approval. Please try again in a few days. "
                 "Hope to see you then!"
             )
-            session.pop("log_in_failed")
+            session.pop("log_in_failed")  # remove the status as it has been presented
         return redirect(url_for("login"))
 
     return redirect(url_for("select_source"))
@@ -175,12 +175,15 @@ def login():
         return render_template("login.html", auth_url=auth_url)
 
     # Step 4. Signed in, display data
-    spotify = spotipy.Spotify(auth_manager=auth_manager)
+    spotify_client = spotipy.Spotify(auth_manager=auth_manager)
 
+    # (re)set log_n_failed tracker
     session["log_in_failed"] = False
 
+    # There's a bug in the current version of spotipy; if user is not registered
+    # it will cause an error which is not yet caught by spotipy, so check this way.
     try:
-        user = spotify.me()
+        user = spotify_client.me()
     except spotipy.exceptions.SpotifyException:
         session["log_in_failed"] = True
         return redirect("/logout")
@@ -234,22 +237,16 @@ def select_source():
     """
     # TODO: user input field for spotify uri?
 
-    # get the spotify thingy
-    spotify = get_spotify()
-
     # if the user clicked on a playlist, go to next step
     if request.method == "POST":
         session["source_playlist"] = request.form.get("playlist_btn")
         return redirect(url_for("select_target"))
     # the user landed on the page... so get playlists from spotify
     else:
-        pl = spotify.current_user_playlists()
-        playlists = pl["items"]
+        # get the spotify_client for the current logged in user.
+        spotify_client = get_spotify()
 
-        # loop till we get all playlists...
-        while pl["next"]:
-            pl = spotify.next(pl)
-            playlists.extend(pl["items"])
+        playlists = get_all_playlists_of_user(spotify_client)
 
         # TODO: fixed images somewhat quick and dirty in the html templates:
         # I wanted to get the smallest images to safe bandwidth and memory
@@ -272,9 +269,6 @@ def select_target():
     """
     # TODO: user input field for spotify uri's + parse?
 
-    # get the spotify thingy
-    spotify = get_spotify()
-
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
         session["target_playlist_ids"] = request.form.getlist("target_playlist_ids")
@@ -289,13 +283,9 @@ def select_target():
             return redirect(url_for("divide"))
     # the user landed on the page... so get playlists from spotify
     else:
-        pl = spotify.current_user_playlists()
-        playlists = pl["items"]
+        spotify_client = get_spotify()
 
-        # loop till we get all playlists...
-        while pl["next"]:
-            pl = spotify.next(pl)
-            playlists.extend(pl["items"])
+        playlists = get_all_playlists_of_user(spotify_client)
 
         # if we've made a selection before, let's pre-check those items
         target_playlist_ids = session.get("target_playlist_ids")
@@ -305,18 +295,21 @@ def select_target():
         # (https://stackoverflow.com/questions/38885575/
         # spotify-web-api-how-to-find-playlists-the-user-can-edit)
 
-        user = spotify.me()
-        for playlist in reversed(playlists):
+        user = spotify_client.me()
+        for current_playlist in reversed(playlists):
             # remove not-owned and collaborative playlists
-            if playlist["owner"]["id"] != user["id"] or playlist["collaborative"]:
-                playlists.remove(playlist)
+            if (
+                current_playlist["owner"]["id"] != user["id"]
+                or current_playlist["collaborative"]
+            ):
+                playlists.remove(current_playlist)
             else:
                 # if we've made a selection before, let's pre-check those items
                 if target_playlist_ids:
-                    if playlist["id"] in target_playlist_ids:
-                        playlist["checked"] = True
+                    if current_playlist["id"] in target_playlist_ids:
+                        current_playlist["checked"] = True
                     else:
-                        playlist["checked"] = False
+                        current_playlist["checked"] = False
 
         # return template with the playlists
         return render_template("select_target.html", playlists=playlists)
@@ -327,7 +320,7 @@ def select_target():
 def divide():
     """TODO..."""
     # get the spotify thingy
-    spotify = get_spotify()
+    spotify_client = get_spotify()
 
     # if the user clicked on a confirm, go to next step
     if request.method == "POST":
@@ -397,7 +390,7 @@ def divide():
         # add song to target playlists (move and copy)
         if radio_action == "radio_move" or radio_action == "radio_copy":
             for action_playlist in action_playlist_ids:
-                spotify.playlist_add_items(action_playlist, [track_data["uri"]])
+                spotify_client.playlist_add_items(action_playlist, [track_data["uri"]])
             # for move, the update count is updated in the next loop
             if radio_action == "radio_copy":
                 session["track_counter"] = update_count(btn_clicked)
@@ -409,13 +402,13 @@ def divide():
             # delete from playlist...
             # ...case liked songs
             if session.get("source_playlist") == "liked_songs":
-                spotify.current_user_saved_tracks_delete([track_data["id"]])
+                spotify_client.current_user_saved_tracks_delete([track_data["id"]])
             # ...case playlist
             else:
                 # TODO: double check if user is owner? Tho 'Copy' should be
                 # only option in that case, and this will just return an error
                 # so not destructive..
-                spotify.playlist_remove_specific_occurrences_of_items(
+                spotify_client.playlist_remove_specific_occurrences_of_items(
                     playlist_id=session.get("source_playlist"),
                     items=[
                         {
@@ -426,8 +419,8 @@ def divide():
                 )
             # delete from sessiontracks (move and delete)
             tracks = session.get("tracks")
-            this_track = tracks[session.get("track_counter")]
-            tracks.remove(this_track)
+            current_track = tracks[session.get("track_counter")]
+            tracks.remove(current_track)
             session["tracks"] = tracks
             # as we delete a track.. the next song automatically comes in the place
             # of the track counter, but... it might be a non-track type.. so let's
@@ -461,9 +454,9 @@ def divide():
             return redirect(url_for("select_source"))
 
         if source_playlist == "liked_songs":
-            tr = spotify.current_user_saved_tracks()
+            tr = spotify_client.current_user_saved_tracks()
         else:
-            tr = spotify.playlist_tracks(playlist_id=source_playlist)
+            tr = spotify_client.playlist_tracks(playlist_id=source_playlist)
             # possibly 'playlist_items', we can also move podcasts, quite difficult tho.
 
         if len(tr["items"]) == 0:
@@ -472,7 +465,7 @@ def divide():
 
         tracks = tr["items"]
         while tr["next"]:
-            tr = spotify.next(tr)
+            tr = spotify_client.next(tr)
             tracks.extend(tr["items"])
 
         # remove non-track items
@@ -494,10 +487,10 @@ def divide():
         # check if user is owner of source playlist, if not owner (or collab etc.),
         # do not show move or delete options; only copy. # liked songs is definetly
         # ours, so no problems there
-        user = spotify.me()
+        user = spotify_client.me()
         session["move_remove_enabled"] = True
         if source_playlist != "liked_songs":
-            playlist = spotify.playlist(source_playlist)
+            playlist = spotify_client.playlist(source_playlist)
             if playlist["owner"]["id"] != user["id"] or playlist["collaborative"]:
                 session["move_remove_enabled"] = False
                 flash(
@@ -530,16 +523,10 @@ def divide():
         if len(target_playlist_ids) < 7:
             target_playlists = []
             for target_playlist_id in target_playlist_ids:
-                target_playlists.append(spotify.playlist(target_playlist_id))
+                target_playlists.append(spotify_client.playlist(target_playlist_id))
 
         else:
-            pl = spotify.current_user_playlists()
-            target_playlists = pl["items"]
-
-            # loop till we get all playlists...
-            while pl["next"]:
-                pl = spotify.next(pl)
-                target_playlists.extend(pl["items"])
+            target_playlists = get_all_playlists_of_user(spotify_client)
 
             for playlist in reversed(target_playlists):
                 # remove not-owned and collaborative playlists
@@ -570,6 +557,19 @@ def divide():
 # TODO: bug report button?
 # TODO: buy me a beer button?
 # TODO: add google ads?
+
+
+def get_all_playlists_of_user(spotify_client):
+    """Return all the playlists of the current user (logged in the Spotify Client)."""
+    current_user_playlists = spotify_client.current_user_playlists()
+    playlists = current_user_playlists["items"]
+
+    # loop till we get all playlists...
+    while current_user_playlists["next"]:
+        current_user_playlists = spotify_client.next(current_user_playlists)
+        playlists.extend(current_user_playlists["items"])
+
+    return playlists
 
 
 def update_count(btn_clicked):
@@ -622,12 +622,12 @@ def render_divide():
     #   "tracks")[session.get("track_counter")]["added_by"]
 
     # specifically to retreive label info...
-    spotify = get_spotify()
-    albuminfo = spotify.album(track["album"]["id"])
+    spotify_client = get_spotify()
+    albuminfo = spotify_client.album(track["album"]["id"])
 
     genres = []
     for artist in track["artists"]:
-        genres.extend(spotify.artist(artist["id"])["genres"])
+        genres.extend(spotify_client.artist(artist["id"])["genres"])
 
     # set up page as it was (initialize, action, select all, action lists)
     # the action button and select_all check box are in the session already
@@ -644,12 +644,12 @@ def render_divide():
     # TODO: add hover over info on valence etc.
     # TODO: Added to playlist info?...
 
-    track_features = spotify.audio_features(track["id"])
+    track_features = spotify_client.audio_features(track["id"])
     key = track_features[0]["key"]
     mode = track_features[0]["mode"]
 
     # tic = time.perf_counter()
-    # track_analysis = spotify.audio_analysis(track["id"])
+    # track_analysis = spotify_client.audio_analysis(track["id"])
     # toc = time.perf_counter()
     # print(toc - tic)
     # print(
